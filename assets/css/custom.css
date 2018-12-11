@@ -329,7 +329,8 @@ html , body{
     background: #FFFFFF;
     border-bottom: 1px solid #dddddd;
     width: 100%;
-    position: relative
+    position: relative;
+	position:static
 }
 @media (min-width: 480px) {
     .nav_menu {
@@ -1842,7 +1843,7 @@ h4.graph_title {
     text-align: right;
     margin-right: 10px
 }
-.main_menu .fa {
+.main_menu .fas {
     width: 26px;
     opacity: .99;
     display: inline-block;

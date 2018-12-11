@@ -21,3 +21,28 @@ function toggleFullScreen() {
     $('.full-screen').toggleClass('icon-maximize');
     $('.full-screen').toggleClass('icon-minimize');
 }
+
+
+$(document).ready(function() {
+	var $BODY = $('body');
+	$('.button-filter, .button-filter-close').on('click', function() {
+		console.log('clicked - menu toggle');
+		
+		if ($BODY.hasClass('full-width')) {
+			$SIDEBAR_MENU.find('li.active ul').hide();
+			$SIDEBAR_MENU.find('li.active').addClass('active-sm').removeClass('active');
+			$BODY.removeClass('nav-md');
+			$BODY.addClass('nav-sm');
+		} else {
+			$SIDEBAR_MENU.find('li.active-sm ul').show();
+			$SIDEBAR_MENU.find('li.active-sm').addClass('active').removeClass('active-sm');
+			$BODY.removeClass('nav-sm');
+			$BODY.addClass('nav-md');
+		}
+
+		$('.dataTable').each ( function () { $(this).dataTable().fnDraw(); });
+	
+		console.log('clicked - filter button');
+		$BODY.toggleClass('full-width semi-width');
+	});
+});
