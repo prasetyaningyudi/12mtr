@@ -1,0 +1,38 @@
+.main_container .top_toolbar{
+    display: block;
+	background:#E2F1FF;
+	padding: 70px 30px 10px 30px;
+	border-bottom: 1px solid #ddd;
+    margin-left: 230px;
+}
+.nav-sm .main_container .top_toolbar {
+    display: block;
+    margin-left: 70px;
+    z-index: 2
+}
+
+.toolbar-left{
+	padding-top: 15px;
+}
+.toolbar-right{
+	justify-content: flex-end;
+	display: flex;
+}
+.button-toolbar-item{
+	text-align:center;
+	font-size:15px;
+	margin: 0px 10px;
+}
+
+@media (max-width: 991px) {
+	.nav-md .container.body .top_toolbar {
+        width: 100%;
+        margin: 0;
+    }
+	.toolbar-right{
+		justify-content: center;	
+	}
+	.toolbar-left{
+		text-align:center;
+	}
+}
