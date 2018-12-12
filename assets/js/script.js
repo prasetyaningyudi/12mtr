@@ -26,7 +26,6 @@ function toggleFullScreen() {
 $(document).ready(function() {
 	var $BODY = $('body');
 	$('.button-filter, .button-filter-close').on('click', function() {
-		console.log('clicked - menu toggle');
 		
 		if ($BODY.hasClass('full-width')) {
 			$SIDEBAR_MENU.find('li.active ul').hide();

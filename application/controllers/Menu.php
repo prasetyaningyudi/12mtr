@@ -19,15 +19,13 @@ class Menu extends CI_Controller {
 		$this->data['subtitle'] = 'List';
 		$this->data['class'] = __CLASS__;
 		$this->load->view('section_header', $this->data);
+		$this->load->view('section_sidebar');
 		$this->load->view('section_nav');
 		$this->load->view('main_index');	
 		$this->load->view('section_footer');			
 	}
-	
-	public function list(){
-		if($this->auth->get_permission($this->session->userdata('ROLE_NAME'), __CLASS__ , __FUNCTION__ ) == false){
-			redirect ('authentication/unauthorized');
-		}		
+
+	public function list(){		
 		$filters = array();
 		$limit = array('10', '0');
 		$r_nama = '';
@@ -69,6 +67,7 @@ class Menu extends CI_Controller {
 		}
 		
 		$data = $this->menu_model->get($filters, $limit);
+		//var_dump($data);
 		$total_data = count($this->menu_model->get($filters));
 		$limit[] = $total_data;
 		
@@ -85,10 +84,10 @@ class Menu extends CI_Controller {
 				foreach ($data as $value) {
 					$body[$no_body] = array(
 						(object) array( 'classes' => ' hidden ', 'value' => $value->ID ),
-						(object) array( 'classes' => ' bold align-left ', 'value' => $no_body+1 ),
+						(object) array( 'classes' => ' bold align-center ', 'value' => $no_body+1 ),
 						(object) array( 'classes' => ' align-left ', 'value' => $value->MENU_NAME ),
 						(object) array( 'classes' => ' align-left ', 'value' => $value->PERMALINK ),
-						(object) array( 'classes' => ' align-left ', 'value' => '<i class="fa fa-'.$value->MENU_ICON.'"></i>' ),
+						(object) array( 'classes' => ' align-center ', 'value' => '<i class="fa fa-'.$value->MENU_ICON.'"></i>' ),
 						(object) array( 'classes' => ' align-left ', 'value' => $value->MENU_ORDER ),
 						(object) array( 'classes' => ' align-left ', 'value' => $value->BMENU_NAME ),
 						(object) array( 'classes' => ' align-center ', 'value' => $value->STATUS ),
@@ -104,7 +103,7 @@ class Menu extends CI_Controller {
 		
 		$header = array(
 			array (
-				(object) array ('rowspan' => 1, 'classes' => 'bold align-left capitalize', 'value' => 'No'),
+				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'No'),
 				(object) array ('colspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'name'),					
 				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'permalink'),			
 				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'icon'),			
@@ -163,16 +162,21 @@ class Menu extends CI_Controller {
 
 		$this->data['list'] = (object) array (
 			'type'  	=> 'table',
-			'insertable'=> true,
-			'editable'	=> true,
-			'deletable'	=> true,
-			'statusable'=> true,
-			'classes'  	=> 'striped bordered hover',
-			'pagination'=> $limit,
-			'filters'  	=> $fields,
-			'header'  	=> $header,
-			'body'  	=> $body,
-			'footer'  	=> null,
+			'data'		=> (object) array (
+				'classes'  	=> 'striped bordered hover',
+				'insertable'=> true,
+				'editable'	=> true,
+				'deletable'	=> true,
+				'statusable'=> true,
+				'detailable'=> true,
+				'pdf'		=> true,
+				'xls'		=> true,
+				'pagination'=> $limit,
+				'filters'  	=> $fields,
+				'header'  	=> $header,
+				'body'  	=> $body,
+				'footer'  	=> null,
+			)
 		);		
 		echo json_encode($this->data['list']);
 	}
