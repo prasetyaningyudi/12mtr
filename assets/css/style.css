@@ -23,19 +23,6 @@
 	font-size:15px;
 	margin: 0px 10px;
 }
-
-@media (max-width: 991px) {
-	.nav-md .container.body .top_toolbar {
-        width: 100%;
-        margin: 0;
-    }
-	.toolbar-right{
-		justify-content: center;	
-	}
-	.toolbar-left{
-		text-align:center;
-	}
-}
 .modal-filter {
     position: fixed;
     top: 0;
@@ -75,7 +62,7 @@
 	right:0;
 }
 .semi-width .right_col, .semi-width .top_nav, .semi-width .top_toolbar, .semi-width footer{
-	margin-right: 304px;
+	margin-right: 300px;
 }
 .modal-filter, .semi-width .modal-filter, .right_col, .semi-width .right_col, .top_nav, .semi-width .top_nav, .semi-width .top_toolbar, .top_toolbar, footer, .semi-width footer{
 	transition: all 0.5s ease;	
@@ -91,4 +78,19 @@
   top: 60;
   width: 100%;
   z-index: 999;
+}
+.modal-content{
+	border-radius: 2px;
+}
+@media (max-width: 991px) {
+	.nav-md .container.body .top_toolbar {
+        width: 100%;
+        margin: 0;
+    }
+	.toolbar-right{
+		justify-content: center;	
+	}
+	.toolbar-left{
+		text-align:center;
+	}
 }
