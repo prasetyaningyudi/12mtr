@@ -23,26 +23,29 @@
 			</div>
 		</div>
 
-		<div class="modal fade" id="modal-add" role="dialog">
+		<div class="modal" id="modal-add" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+		<form id="form-add">
 			<div class="modal-dialog modal-lg">
 			  <!-- Modal content-->
 			  <div class="modal-content">
 				<div class="modal-header">
 				  <button type="button" class="close" data-dismiss="modal">&times;</button>
-				  <h4 class="modal-title">Modal Add</h4>
+				  <h4 class="modal-title">Insert Data <?php if(isset($title)){	echo ucwords(strtolower($title));}?></h4>
 				</div>
 				<div class="modal-body">
-				  <p>Some text in the modal.</p>
+				  
 				</div>
 				<div class="modal-footer">
-				  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<input role="button" type="reset" id="button-reset" name="reset" class="btn btn-info" value="reset">
+					<input role="button" type="submit" id="button-save" name="submit" class="btn btn-primary" value="submit" style="margin-left: 30px;">
 				</div>
 			  </div>
 			  
 			</div>
+		</form>
 		</div>	
 
-		<div class="modal fade" id="modal-edit" role="dialog">
+		<div class="modal" id="modal-edit" role="dialog">
 			<div class="modal-dialog modal-lg">
 			  <!-- Modal content-->
 			  <div class="modal-content">
@@ -61,7 +64,30 @@
 			</div>
 		</div>
 
-		<div class="modal fade" id="modal-delete" role="dialog">
+		<div class="modal" id="modal-delete" role="dialog">
+		<form id="form-delete">
+			<div class="modal-dialog modal-lg">
+			  <!-- Modal content-->
+			  <div class="modal-content">
+				<div class="modal-header">
+				  <button type="button" class="close" data-dismiss="modal">&times;</button>
+				  <h4 class="modal-title">Delete Data <?php if(isset($title)){	echo ucwords(strtolower($title));}?></h4>
+				</div>
+				<div class="modal-body">
+					<strong>Are you sure to delete this record?</strong>
+				</div>
+				<div class="modal-footer">
+				  <input type="hidden" name="id" id="id" class="form-control">
+				  <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+				  <input role="button" type="submit" id="button-delete" name="submit" class="btn btn-primary" value="submit" style="margin-left: 30px;">		  
+				</div>
+			  </div>
+			  
+			</div>
+		</form>
+		</div>
+		
+		<div class="modal" id="modal-info" role="dialog">
 			<div class="modal-dialog modal-lg">
 			  <!-- Modal content-->
 			  <div class="modal-content">
@@ -78,9 +104,9 @@
 			  </div>
 			  
 			</div>
-		</div>
+		</div>		
 
-		<div class="modal fade" id="modal-detail" role="dialog">
+		<div class="modal" id="modal-detail" role="dialog">
 			<div class="modal-dialog modal-lg">
 			  <!-- Modal content-->
 			  <div class="modal-content">
@@ -108,12 +134,12 @@
 				</div>
 				<div class="col-md-6 col-sm-12 col-xs-12 toolbar-right">
 					<div class="button-toolbar-item">
-						<a href="#" data-toggle="modal" data-target="#modal-detail">
+						<a href="javascript:void(0)" data-toggle="modal" data-target="#modal-detail">
 							<i style="font-size: 16px;" class="fa fa-layer-group"></i><br>TOOLBAR
 						</a>
 					</div>					
 					<div class="button-toolbar-item button-add">
-						<a href="javascript:void(0)" data-toggle="modal" data-target="#modal-add">
+						<a href="javascript:void(0)">
 							<i style="font-size: 16px;" class="fa fa-plus"></i><br>ADD
 						</a>
 					</div>								
@@ -143,8 +169,8 @@
             <div class="col-md-12 col-sm-12 col-xs-12">
               <div class="x_panel">
                 <div class="x_title">
-                  <h2>Recent Activities <small>Sessions</small></h2>
-                  <ul class="nav navbar-right panel_toolbox">
+                  <h2>List <?php if(isset($title)){	echo ucwords(strtolower($title));}?></h2>
+                  <!--<ul class="nav navbar-right panel_toolbox">
                     <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                     </li>
                     <li class="dropdown">
@@ -158,7 +184,7 @@
                     </li>
                     <li><a class="close-link"><i class="fas fa-times"></i></a>
                     </li>
-                  </ul>
+                  </ul> -->
                   <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
@@ -177,7 +203,8 @@
 <script src="<?php echo base_url(); ?>assets/js/general.js"></script>
 <script>
 $(document).ready(function(){
-	get_data('<?php echo site_url($class); ?>');	
+	initiation('<?php echo site_url($class); ?>')
+	//get_data('<?php echo site_url($class).'/list'; ?>');	
 });
 </script>
 

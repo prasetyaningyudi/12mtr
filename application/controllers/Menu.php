@@ -161,7 +161,7 @@ class Menu extends CI_Controller {
 	
 
 		$this->data['list'] = (object) array (
-			'type'  	=> 'table',
+			'type'  	=> 'table_default',
 			'data'		=> (object) array (
 				'classes'  	=> 'striped bordered hover',
 				'insertable'=> true,
@@ -181,10 +181,7 @@ class Menu extends CI_Controller {
 		echo json_encode($this->data['list']);
 	}
 	
-	public function insert(){
-		if($this->auth->get_permission($this->session->userdata('ROLE_NAME'), __CLASS__ , __FUNCTION__ ) == false){
-			redirect ('authentication/unauthorized');
-		}		
+	public function insert(){	
 		if(isset($_POST['submit'])){
 			//validation
 			$error_info = array();
@@ -222,8 +219,9 @@ class Menu extends CI_Controller {
 			if($error_status == true){
 				$this->data['error'] = (object) array (
 					'type'  	=> 'error',
-					'status'	=> $error_status,
-					'info'	=> $error_info,
+					'data'		=> (object) array (
+						'info'	=> $error_info,
+					)
 				);				
 				echo json_encode($this->data['error']);
 			}else{
@@ -284,14 +282,22 @@ class Menu extends CI_Controller {
 				}
 				//var_dump($this->data['insert']);die;
 				$result = $this->menu_model->insert($this->data['insert']);
-				echo json_encode($result);				
+				$info = array();
+				$info[] = 'Insert data success';
+				$this->data['success'] = (object) array (
+					'type'  	=> 'success',
+					'data'		=> (object) array (
+						'info'	=> $info,
+					)
+				);			
+				echo json_encode($this->data['success']);				
 			}
 		}else{
 			$parent = array();
 			$data = $this->menu_model->get_parent();
 			
 			if (empty($data)) {
-				//$parent[] = (object) array('label'=>'No Data', 'value'=>'nodata');
+
 			} else {
 				foreach ($data as $value) {
 					$parent[] = (object) array('label'=>$value->MENU_NAME, 'value'=>$value->ID);
@@ -338,14 +344,16 @@ class Menu extends CI_Controller {
 				'placeholder'	=> '--Select Parent--',
 				'value' 		=> '',
 				'options'		=> $parent,
-				'classes' 		=> 'required',
+				'classes' 		=> 'required full-width',
 			);			
 			
 
 			$this->data['insert'] = (object) array (
-				'type'  	=> 'modal',
-				'classes'  	=> '',
-				'fields'  	=> $fields,
+				'type'  	=> 'insert_default',
+				'data'		=> (object) array (
+					'classes'  	=> '',
+					'fields'  	=> $fields,
+				)
 			);	
 			echo json_encode($this->data['insert']);				
 		}
@@ -552,10 +560,7 @@ class Menu extends CI_Controller {
 		}
 	}
 	
-	public function update_status(){
-		if($this->auth->get_permission($this->session->userdata('ROLE_NAME'), __CLASS__ , __FUNCTION__ ) == false){
-			redirect ('authentication/unauthorized');
-		}		
+	public function update_status(){		
 		if(isset($_POST['id']) and $_POST['id'] != null){
 			$filters = array();
 			$filters[] = "A.ID = ". $_POST['id'];
@@ -582,14 +587,32 @@ class Menu extends CI_Controller {
 	}
 	
 	public function delete(){
-		if($this->auth->get_permission($this->session->userdata('ROLE_NAME'), __CLASS__ , __FUNCTION__ ) == false){
-			redirect ('authentication/unauthorized');
-		}		
 		$this->data['delete'] = array(
 				'ID' => $_POST['id'],
 			);		
 		$result = $this->menu_model->delete($this->data['delete']);
-		echo json_encode($result);		
+		
+		if($result == true){
+			$info = array();
+			$info[] = 'Delete data successfully';			
+			$info[] = 'Have a nice day';			
+			$this->data['info'] = (object) array (
+				'type'  	=> 'success',
+				'data'		=> (object) array (
+					'info'	=> $info,
+				)
+			);
+		}else{
+			$info = array();
+			$info[] = 'Delete data not successfull';
+			$this->data['info'] = (object) array (
+				'type'  	=> 'error',
+				'data'		=> (object) array (
+					'info'	=> $info,
+				)
+			);
+		}
+		echo json_encode($this->data['info']);			
 	}
 	
 }

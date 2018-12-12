@@ -1,22 +1,266 @@
 var the_data;
-function get_data(url_class){
+var targeturl;
+
+function initiation(url){
+	targeturl = url;
 	$.ajax({
 		type  : 'ajax',
-		url   : url_class+'/list',
+		url   : targeturl + '/list',
 		async : true,
 		dataType : 'json',
 		success : function(data){
-			the_data = data;
-			if(data.type == 'table'){
-				hide_toolbar();
-				generate_table();
-			}else if(data.type == 'modal'){
-				data_modal(data.data);
-			}else{
-				
-			}
+			get_data(data);
 		}
 	});	
+}
+
+//input record
+$('.button-add').on('click',function(){
+	$.ajax({
+		type : "POST",
+		url  : targeturl+'/insert',
+		dataType : "JSON",
+		success: function(data){
+			get_data(data);
+		}
+	});
+	return true;
+});
+
+$('#button-save').on('click',function(){
+	var datainput = generate_json_from_field("#form-add");
+	//console.log(datainput);
+	$.ajax({
+		type : "POST",
+		url  : targeturl+'/insert',
+		dataType : "JSON",
+		data : JSON.parse(datainput),
+		success: function(data){
+			$('#modal-add').modal('hide');
+			get_data(data);
+			$("#form-add").trigger("reset");
+			initiation(targeturl);			
+		}
+	});
+
+	return false;
+});
+
+//get data for delete record
+$('#show-data').on('click','.item-delete',function(){
+	var id = $(this).attr("id");
+	$('#modal-delete').modal('show');
+	$('[name="id"]').val(id);
+});
+
+//delete record to database
+ $('#button-delete').on('click',function(){
+	var id = $('#id').val();
+	$.ajax({
+		type : "POST",
+		url  : targeturl+'/delete',
+		dataType : "JSON",
+		data : {id:id},
+		success: function(data){
+			$('#modal-delete').modal('hide');
+			get_data(data);
+			initiation(targeturl);
+		}
+	});
+	return false;
+});
+
+
+function get_data(data){
+	the_data = data;
+	console.log(the_data);
+	if(data.type == 'table_default'){
+		hide_toolbar();
+		generate_table();
+	}else if(data.type == 'insert_default'){
+		$('#modal-add .modal-body').html(generate_form());
+		$('#modal-add').modal('show');		
+	}else if(data.type == 'error'){
+		var i;
+		var info = '<ul>';
+		for(i=0; i<the_data.data.info.length; i++){
+			info += '<li>';
+			info += the_data.data.info[i];
+			info += '</li>';
+		}
+		info += '</ul>';
+		$('#modal-info .modal-title').html('Information : ERROR');
+		$('#modal-info .modal-body').html('<div class="alert alert-light" role="alert">'+info+'</div>');
+		$('#modal-info').modal('show');		
+	}else if(data.type == 'success'){
+		var i;
+		var info = '<ul>';
+		for(i=0; i<the_data.data.info.length; i++){
+			info += '<li>';
+			info += the_data.data.info[i];
+			info += '</li>';
+		}
+		info += '</ul>';		
+		$('#modal-info .modal-title').html('Information : Success');
+		$('#modal-info .modal-body').html('<div class="alert alert-light" role="alert">'+info+'</div>');
+		$('#modal-info').modal('show');		
+	}
+}
+
+function generate_json_from_field(selector){
+	console.log('generate json from field from');
+	var field = $(selector).find( "[name]" );
+	var datainput='{';
+	var i= 0;
+	$(field).each(function(index,element){
+		if($(this).is(':checkbox')){
+			if($(this).is( ':checked' )){
+				datainput += '"'+element.name+'"';
+				datainput += ':';
+				datainput += '"'+element.value+'"';
+				if(i != field.length -1 ){
+					datainput += ',';
+				}
+			}else{
+				datainput += '"'+element.name+'"';
+				datainput += ':';				
+				datainput += '"off"';
+				if(i != field.length -1 ){
+					datainput += ',';
+				}
+			}
+		}else if($(this).is(':radio')){
+			if($(this).is( ':checked' )){
+				datainput += '"'+element.name+'"';
+				datainput += ':';
+				datainput += '"'+element.value+'"';
+				if(i != field.length -1 ){
+					datainput += ',';
+				}
+			}
+		}else{
+			datainput += '"'+element.name+'"';
+			datainput += ':';
+			datainput += '"'+element.value+'"';
+			if(i != field.length -1 ){
+				datainput += ',';
+			}
+		}		
+		i++;
+	});
+	datainput += '}';
+	return datainput;
+}
+
+function generate_form(){
+	console.log('Generate form for frond end');
+	var html = '';
+	var i;
+	for(i=0;i<the_data.data.fields.length;i++){
+		if(the_data.data.fields[i].classes.includes("full-width") == true){
+			html += '<div class="form-group col-md-12 col-sm-12 col-xs-12">';
+		}else{
+			html += '<div class="form-group col-md-6 col-sm-6 col-xs-12">';
+		}
+		html += '<label>'+the_data.data.fields[i].label+'</label>';
+		html += set_field_form(the_data.data.fields[i]);
+		html += '</div>';
+	}	
+	html += '<div class="clearfix"></div>';
+	return html;
+}
+
+function set_field_form(data){
+	//console.log(data);
+	var html = '';
+	if(data.type == 'text'){
+		html += '<input type="text" name="'+data.name+'" id="'+data.name+'" value="'+data.value+'" class="form-control" placeholder="'+data.placeholder+'" ';					
+		html += field_classes(data.classes);
+		html += '>';
+	}else if(data.type == 'email'){
+		html += '<input type="email" name="'+data.name+'" id="'+data.name+'" value="'+data.value+'" class="form-control" placeholder="'+data.placeholder+'" ';					
+		html += field_classes(data.classes);
+		html += '>';
+	}else if(data.type == 'password'){
+		html += '<input type="password" name="'+data.name+'" id="'+data.name+'" value="'+data.value+'" class="form-control" placeholder="'+data.placeholder+'" ';					
+		html += field_classes(data.classes);
+		html += '>';
+	}else if(data.type == 'date'){
+		html += '<input type="date" name="'+data.name+'" id="'+data.name+'" value="'+data.value+'" class="form-control" placeholder="'+data.placeholder+'" ';					
+		html += field_classes(data.classes);
+		html += '>';
+	}else if(data.type == 'textarea'){
+		html += '<textarea name="'+data.name+'" id="'+data.name+'" class="form-control" rows="4" placeholder="'+data.placeholder+'" ';					
+		html += field_classes(data.classes);
+		html += '>'+data.value+'</textarea>';
+	}else if(data.type == 'hidden'){
+		html += '<input type="hidden" name="'+data.name+'" id="'+data.name+'" value="'+data.value+'" class="form-control" ';	
+		html += field_classes(data.classes);
+		html += '></textarea>';
+	}else if(data.type == 'select'){
+		html += '<select name="'+data.name+'" id="'+data.name+'" class="form-control custom-select" ';	
+		html += field_classes(data.classes);
+		html += '>';
+		html += '<option value="">'+data.placeholder+'</option>';
+		var i;
+		for(i=0;i<data.options.length;i++){
+			//console.log(data.value);
+			if(data.value == data.options[i].value){
+				html += '<option value="'+data.options[i].value+'" selected>'+data.options[i].label+'</option>';
+			}else{
+				html += '<option value="'+data.options[i].value+'">'+data.options[i].label+'</option>';
+			}
+		}
+		html += '</select>';
+	}else if(data.type == 'radio'){	
+		var i;
+		for(i=0;i<data.options.length;i++){
+			html += '<div class="form-check">';
+			html += '<input class="form-check-input" type="radio" name="'+data.name+'" id="'+data.name+i+'" value="'+data.options[i].value+'" ';			
+			if(data.value == data.options[i].value){
+				html += 'checked>';
+			}else{
+				html += '>';
+			}
+			html += '<label class="form-check-label" for="'+data.name+i+'">';
+			html += data.options[i].label;
+			html += '</label>';
+			html += '</div>';
+		}
+	}else if(data.type == 'checkbox'){	
+		var i;
+		for(i=0;i<data.options.length;i++){
+			html += '<div class="form-check">';
+			html += '<input class="form-check-input" type="checkbox" name="'+data.name+'" id="'+data.name+i+'" ';
+			if(data.value == 'on'){
+				html += 'checked>';
+			}else{
+				html += '>';
+			}
+			html += '<label class="form-check-label" for="'+data.name+i+'">';
+			html += data.options[i].label;
+			html += '</label>';
+			html += '</div>';
+		}
+	}
+	return html;
+}
+
+function field_classes(value){
+	var required = '';
+	var readonly = '';
+	var disabled = '';
+	if(value.includes("required") == true){
+		required = 'required';
+	}
+	if(value.includes("readonly") == true){
+		readonly = 'readonly';
+	}
+	if(value.includes("disabled") == true){
+		disabled = 'disabled';
+	}
+	
+	return (required + ' ' + readonly + ' ' + disabled);
 }
 
 function hide_toolbar(){
@@ -126,7 +370,7 @@ function set_table_body(){
 			}
 			if(the_data.data.deletable == true){
 				html += '<td class="text-center font-weight-bold">';
-				html += '<a class="item-delete" id="'+the_data.data.body[i][0].value+'" href="javascript:void(0);" data-toggle="modal" data-target="#modal-delete" title="delete"><i style="font-size: 16px;" class="fas fa-trash"></i></a>';
+				html += '<a class="item-delete" id="'+the_data.data.body[i][0].value+'" href="javascript:void(0);" title="delete"><i style="font-size: 16px;" class="fas fa-trash"></i></a>';
 				html += '</td>';
 			}
 			if(the_data.data.detailable == true){
