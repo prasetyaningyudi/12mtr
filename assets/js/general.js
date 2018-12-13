@@ -27,6 +27,7 @@ $('.button-add').on('click',function(){
 	return true;
 });
 
+//saving record
 $('#button-save').on('click',function(){
 	var datainput = generate_json_from_field("#form-add");
 	//console.log(datainput);
@@ -40,6 +41,58 @@ $('#button-save').on('click',function(){
 			get_data(data);
 			$("#form-add").trigger("reset");
 			initiation(targeturl);			
+		}
+	});
+
+	return false;
+});
+
+//get data for update record
+$('#show-data').on('click','.item-edit',function(){
+	var id = $(this).attr("id");
+	$.ajax({
+		type : "POST",
+		url  : targeturl+'/update',
+		dataType : "JSON",
+		data : {id:id},
+		success: function(data){
+			get_data(data);
+		}
+	});
+	return true;
+});
+
+//update data
+$('#button-update').on('click',function(){
+	var datainput = generate_json_from_field("#form-edit");
+	//console.log(datainput);
+	$.ajax({
+		type : "POST",
+		url  : targeturl+'/update',
+		dataType : "JSON",
+		data : JSON.parse(datainput),
+		success: function(data){
+			$('#modal-edit').modal('hide');
+			get_data(data);
+			initiation(targeturl);			
+		}
+	});
+
+	return false;
+});
+
+//saving record
+$('#button-submit-filter').on('click',function(){
+	var datainput = generate_json_from_field("#form-filter");
+	//console.log(datainput);
+	$.ajax({
+		type : "POST",
+		url  : targeturl+'/list',
+		dataType : "JSON",
+		data : JSON.parse(datainput),
+		success: function(data){
+			get_data(data);
+			$('body').toggleClass('full-width semi-width');
 		}
 	});
 
@@ -70,16 +123,55 @@ $('#show-data').on('click','.item-delete',function(){
 	return false;
 });
 
+//get data for update status record
+$('#show-data').on('click','.item-status',function(){
+	var id = $(this).attr("id");
+	$.ajax({
+		type : "POST",
+		url  : targeturl+'/update_status',
+		dataType : "JSON",
+		data : {id:id},
+		success: function(data){
+			get_data(data);
+			initiation(targeturl);
+		}
+	});
+	return true;
+});
+
+//get data for detail record
+$('#show-data').on('click','.item-detail',function(){
+	var id = $(this).attr("id");
+	$.ajax({
+		type : "POST",
+		url  : targeturl+'/detail',
+		dataType : "JSON",
+		data : {id:id},
+		success: function(data){
+			get_data(data);
+		}
+	});
+	return true;
+});
+
 
 function get_data(data){
 	the_data = data;
-	console.log(the_data);
 	if(data.type == 'table_default'){
 		hide_toolbar();
-		generate_table();
+		$('#show-data').html(generate_table());
+		if(the_data.data.filters != null){
+			$('.modal-filter .filter-body').html(generate_form(true));
+		}
 	}else if(data.type == 'insert_default'){
-		$('#modal-add .modal-body').html(generate_form());
+		$('#modal-add .modal-body').html(generate_form(false));
 		$('#modal-add').modal('show');		
+	}else if(data.type == 'update_default'){
+		$('#modal-edit .modal-body').html(generate_form(false));
+		$('#modal-edit').modal('show');	
+	}else if(data.type == 'detail_default'){
+		$('#modal-detail .modal-body').html(generate_table());
+		$('#modal-detail').modal('show');		
 	}else if(data.type == 'error'){
 		var i;
 		var info = '<ul>';
@@ -152,19 +244,30 @@ function generate_json_from_field(selector){
 	return datainput;
 }
 
-function generate_form(){
+function generate_form(from_filter){
 	console.log('Generate form for frond end');
+
+	if(from_filter == true){
+		field_data = the_data.data.filters;
+	}else{
+		field_data = the_data.data.fields;
+	}
+	
 	var html = '';
-	var i;
-	for(i=0;i<the_data.data.fields.length;i++){
-		if(the_data.data.fields[i].classes.includes("full-width") == true){
-			html += '<div class="form-group col-md-12 col-sm-12 col-xs-12">';
+	var i;	
+	for(i=0;i<field_data.length;i++){
+		if(field_data[i].type == 'hidden'){
+			html += set_field_form(field_data[i]);
 		}else{
-			html += '<div class="form-group col-md-6 col-sm-6 col-xs-12">';
+			if(field_data[i].classes.includes("full-width") == true){
+				html += '<div class="form-group col-md-12 col-sm-12 col-xs-12">';
+			}else{
+				html += '<div class="form-group col-md-6 col-sm-6 col-xs-12">';
+			}
+			html += '<label>'+field_data[i].label+'</label>';
+			html += set_field_form(field_data[i]);
+			html += '</div>';
 		}
-		html += '<label>'+the_data.data.fields[i].label+'</label>';
-		html += set_field_form(the_data.data.fields[i]);
-		html += '</div>';
 	}	
 	html += '<div class="clearfix"></div>';
 	return html;
@@ -299,7 +402,7 @@ function generate_table(){
 	html += '</tbody>';
 	html += '</table>';
 	console.log('generate table finished');
-	$('#show-data').html(html);	
+	return html;
 }
 
 function set_table_header(){
@@ -360,12 +463,12 @@ function set_table_body(){
 		}else{
 			if(the_data.data.statusable == true){
 				html += '<td class="text-center font-weight-bold">';
-				html += '<a class="item-status" id="'+the_data.data.body[i][0].value+'" href="javascript:void(0);" data-toggle="tooltip" data-placement="top" title="edit status"><i style="font-size: 16px;" class="fa fa-check"></i></a>';
+				html += '<a class="item-status" id="'+the_data.data.body[i][0].value+'" href="javascript:void(0);" title="edit status"><i style="font-size: 16px;" class="fa fa-check"></i></a>';
 				html += '</td>';
 			}					
 			if(the_data.data.editable == true){
 				html += '<td class="text-center font-weight-bold">';
-				html += '<a class="item-edit" id="'+the_data.data.body[i][0].value+'" href="javascript:void(0);" data-toggle="modal" data-target="#modal-edit" title="edit"><i style="font-size: 16px;" class="fas fa-edit"></i></a>';
+				html += '<a class="item-edit" id="'+the_data.data.body[i][0].value+'" href="javascript:void(0);" title="edit"><i style="font-size: 16px;" class="fas fa-edit"></i></a>';
 				html += '</td>';
 			}
 			if(the_data.data.deletable == true){
@@ -375,7 +478,7 @@ function set_table_body(){
 			}
 			if(the_data.data.detailable == true){
 				html += '<td class="text-center font-weight-bold">';
-				html += '<a class="item-detail" id="'+the_data.data.body[i][0].value+'" href="javascript:void(0);" data-toggle="modal" data-target="#modal-detail" title="detail"><i style="font-size: 16px;" class="fas fa-info"></i></a>';
+				html += '<a class="item-detail" id="'+the_data.data.body[i][0].value+'" href="javascript:void(0);" title="detail"><i style="font-size: 16px;" class="fas fa-info"></i></a>';
 				html += '</td>';
 			}			
 		}					

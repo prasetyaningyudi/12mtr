@@ -131,7 +131,7 @@ class Menu extends CI_Controller {
 			'placeholder' 	=> 'Menu Name',
 			'name' 			=> 'nama',
 			'value' 		=> $r_nama,
-			'classes' 		=> '',
+			'classes' 		=> 'full-width',
 		);
 		$fields[] = (object) array(
 			'type' 			=> 'text',
@@ -139,7 +139,7 @@ class Menu extends CI_Controller {
 			'name' 			=> 'order',
 			'placeholder'	=> 'Input order like',
 			'value' 		=> $r_order,
-			'classes' 		=> '',
+			'classes' 		=> 'full-width',
 		);			
 		$fields[] = (object) array(
 			'type' 			=> 'text',
@@ -147,7 +147,7 @@ class Menu extends CI_Controller {
 			'name' 			=> 'status',
 			'placeholder'	=> 'Input status',
 			'value' 		=> $r_status,
-			'classes' 		=> '',
+			'classes' 		=> 'full-width',
 		);			
 		$fields[] = (object) array(
 			'type' 			=> 'select',
@@ -156,7 +156,7 @@ class Menu extends CI_Controller {
 			'placeholder'	=> '--Select Parent--',
 			'value' 		=> $r_parent,
 			'options'		=> $parent,
-			'classes' 		=> 'required',
+			'classes' 		=> 'required full-width',
 		);			
 	
 
@@ -359,10 +359,7 @@ class Menu extends CI_Controller {
 		}
 	}
 	
-	public function update(){
-		if($this->auth->get_permission($this->session->userdata('ROLE_NAME'), __CLASS__ , __FUNCTION__ ) == false){
-			redirect ('authentication/unauthorized');
-		}		
+	public function update(){		
 		if(isset($_POST['submit'])){
 			//validation
 			$error_info = array();
@@ -400,8 +397,9 @@ class Menu extends CI_Controller {
 			if($error_status == true){
 				$this->data['error'] = (object) array (
 					'type'  	=> 'error',
-					'status'	=> $error_status,
-					'info'	=> $error_info,
+					'data'		=> (object) array (
+						'info'	=> $error_info,
+					)
 				);				
 				echo json_encode($this->data['error']);
 			}else{
@@ -461,7 +459,26 @@ class Menu extends CI_Controller {
 					}
 				}
 				$result = $this->menu_model->update($this->data['update'], $_POST['id']);
-				echo json_encode($result);				
+				if($result == true){
+					$info = array();
+					$info[] = 'Update data successfully';						
+					$this->data['info'] = (object) array (
+						'type'  	=> 'success',
+						'data'		=> (object) array (
+							'info'	=> $info,
+						)
+					);
+				}else{
+					$info = array();
+					$info[] = 'Update data not successfull';
+					$this->data['info'] = (object) array (
+						'type'  	=> 'error',
+						'data'		=> (object) array (
+							'info'	=> $info,
+						)
+					);
+				}				
+				echo json_encode($this->data['info']);			
 			}			
 		}else{
 			$r_nama = '';
@@ -548,15 +565,84 @@ class Menu extends CI_Controller {
 				'placeholder'	=> '--Select Parent--',
 				'value' 		=> $r_parent,
 				'options'		=> $parent,
-				'classes' 		=> '',
+				'classes' 		=> 'full-width',
 			);		
 
-			$this->data['insert'] = (object) array (
-				'type'  	=> 'modal',
-				'classes'  	=> '',
-				'fields'  	=> $fields,
-			);	
-			echo json_encode($this->data['insert']);
+			$this->data['update'] = (object) array (
+				'type'  	=> 'update_default',
+				'data'		=> (object) array (
+					'classes'  	=> '',
+					'fields'  	=> $fields,
+				)
+			);
+			echo json_encode($this->data['update']);
+		}
+	}
+	
+	public function detail($id=null){
+		if(isset($_POST['id']) and $_POST['id'] != null){
+			$filters = array();
+			$filters[] = "A.ID = ". $_POST['id'];
+			$data = $this->menu_model->get($filters);
+			
+			$body= array();			
+			if (empty($data)) {
+                $body[] = array(
+                    (object) array ('colspan' => 100, 'classes' => ' empty bold align-center', 'value' => 'No Data')
+                );
+			} else {
+				foreach($data as $value){
+					$body[] = array(
+						(object) array( 'classes' => ' bold align-left ', 'value' => 'Name' ),
+						(object) array( 'classes' => ' align-left ', 'value' => $value->MENU_NAME ),
+					);
+					$body[] = array(
+						(object) array( 'classes' => ' bold align-left ', 'value' => 'Permalink' ),
+						(object) array( 'classes' => ' align-left ', 'value' => $value->PERMALINK ),
+					);
+					$body[] = array(
+						(object) array( 'classes' => ' bold align-left ', 'value' => 'Icon' ),
+						(object) array( 'classes' => ' align-left ', 'value' => '<i class="fa fa-'.$value->MENU_ICON.'"></i>' ),
+					);
+					$body[] = array(
+						(object) array( 'classes' => ' bold align-left ', 'value' => 'Order' ),
+						(object) array( 'classes' => ' align-left ', 'value' => $value->MENU_ORDER ),
+					);
+					$body[] = array(
+						(object) array( 'classes' => ' bold align-left ', 'value' => 'Parent' ),
+						(object) array( 'classes' => ' align-left ', 'value' => $value->BMENU_NAME ),
+					);
+					$body[] = array(
+						(object) array( 'classes' => ' bold align-left ', 'value' => 'Status' ),
+						(object) array( 'classes' => ' align-left ', 'value' => $value->STATUS ),
+					);
+					$body[] = array(
+						(object) array( 'classes' => ' bold align-left ', 'value' => 'Create Date' ),
+						(object) array( 'classes' => ' align-left ', 'value' => $value->CREATE_DATE ),
+					);
+					$body[] = array(
+						(object) array( 'classes' => ' bold align-left ', 'value' => 'Update Date' ),
+						(object) array( 'classes' => ' align-left ', 'value' => $value->UPDATE_DATE ),
+					);	
+				}
+			}
+			
+			$header = array(
+				array (
+					(object) array ('rowspan' => 1, 'classes' => 'bold align-left capitalize', 'value' => 'Label'),
+					(object) array ('colspan' => 1, 'classes' => 'bold align-left capitalize', 'value' => 'Value'),	
+				)		
+			);			
+			
+			$this->data['detail'] = (object) array (
+				'type'  	=> 'detail_default',
+				'data'		=> (object) array (
+					'classes'	=> 'striped bordered hover',
+					'header'	=> $header,
+					'body'		=> $body,
+				)
+			);			
+			echo json_encode($this->data['detail']);
 		}
 	}
 	
@@ -582,7 +668,26 @@ class Menu extends CI_Controller {
 				);	
 				
 			$result = $this->menu_model->update($this->data['update'], $_POST['id']);
-			echo json_encode($result);	
+			if($result == true){
+				$info = array();
+				$info[] = 'Update status data successfully';						
+				$this->data['info'] = (object) array (
+					'type'  	=> 'success',
+					'data'		=> (object) array (
+						'info'	=> $info,
+					)
+				);
+			}else{
+				$info = array();
+				$info[] = 'Update status data not successfull';
+				$this->data['info'] = (object) array (
+					'type'  	=> 'error',
+					'data'		=> (object) array (
+						'info'	=> $info,
+					)
+				);
+			}			
+			echo json_encode($this->data['info']);	
 		}
 	}
 	

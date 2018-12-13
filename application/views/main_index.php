@@ -1,7 +1,7 @@
 		<!-- start modal -->
 		<div class="modal-filter">
+		<form id="form-filter">
 			<div class="filter-dialog">	
-				<form method="post" id="form-filter"> 
 				<div class="filter-header row align-middle">
 					<div class="col-md-8 col-sm-8 col-xs-8 filter-title">Filters</div>
 					<button type="button" class="col-md-2 col-sm-2 col-xs-2 close button-filter-close pull-right" >
@@ -19,8 +19,8 @@
 						<input role="button" type="submit" id="button-submit-filter" name="submit" class="btn-block btn btn-primary align-right" value="submit">
 					</div>
 				</div>
-				</form>
 			</div>
+		</form>	
 		</div>
 
 		<div class="modal" id="modal-add" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
@@ -40,28 +40,28 @@
 					<input role="button" type="submit" id="button-save" name="submit" class="btn btn-primary" value="submit" style="margin-left: 30px;">
 				</div>
 			  </div>
-			  
 			</div>
 		</form>
 		</div>	
 
 		<div class="modal" id="modal-edit" role="dialog">
+		<form id="form-edit">
 			<div class="modal-dialog modal-lg">
 			  <!-- Modal content-->
 			  <div class="modal-content">
 				<div class="modal-header">
 				  <button type="button" class="close" data-dismiss="modal">&times;</button>
-				  <h4 class="modal-title">Modal Edit</h4>
+				  <h4 class="modal-title">Update Data <?php if(isset($title)){	echo ucwords(strtolower($title));}?></h4>
 				</div>
 				<div class="modal-body">
-				  <p>Some text in the modal.</p>
+				  
 				</div>
 				<div class="modal-footer">
-				  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				  <input role="button" type="submit" id="button-update" name="submit" class="btn btn-primary" value="submit" style="margin-left: 30px;">
 				</div>
 			  </div>
-			  
 			</div>
+		</form>
 		</div>
 
 		<div class="modal" id="modal-delete" role="dialog">
@@ -82,7 +82,6 @@
 				  <input role="button" type="submit" id="button-delete" name="submit" class="btn btn-primary" value="submit" style="margin-left: 30px;">		  
 				</div>
 			  </div>
-			  
 			</div>
 		</form>
 		</div>
@@ -102,7 +101,6 @@
 				  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 				</div>
 			  </div>
-			  
 			</div>
 		</div>		
 
@@ -112,16 +110,15 @@
 			  <div class="modal-content">
 				<div class="modal-header">
 				  <button type="button" class="close" data-dismiss="modal">&times;</button>
-				  <h4 class="modal-title">Modal Detail</h4>
+				  <h4 class="modal-title">Detail Data <?php if(isset($title)){	echo ucwords(strtolower($title));}?></h4>
 				</div>
 				<div class="modal-body">
-				  <p>Some text in the modal.</p>
+				
 				</div>
 				<div class="modal-footer">
 				  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 				</div>
 			  </div>
-			  
 			</div>
 		</div>			
 		<!-- end modal -->
@@ -169,7 +166,7 @@
             <div class="col-md-12 col-sm-12 col-xs-12">
               <div class="x_panel">
                 <div class="x_title">
-                  <h2>List <?php if(isset($title)){	echo ucwords(strtolower($title));}?></h2>
+                  <h4>List <?php if(isset($title)){	echo ucwords(strtolower($title));}?></h4>
                   <!--<ul class="nav navbar-right panel_toolbox">
                     <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                     </li>
