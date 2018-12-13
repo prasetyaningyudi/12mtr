@@ -189,6 +189,8 @@
 					<div id="show-data">
 					
 					</div>
+					<div class="paging text-center">
+					</div>
                   </div>
                 </div>
               </div>

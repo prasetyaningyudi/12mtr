@@ -1,5 +1,6 @@
 var the_data;
 var targeturl;
+var fromfilter;
 
 function initiation(url){
 	targeturl = url;
@@ -10,8 +11,13 @@ function initiation(url){
 		dataType : 'json',
 		success : function(data){
 			get_data(data);
+			from_filter(false);
 		}
 	});	
+}
+
+function from_filter(ff){
+	fromfilter = ff;	
 }
 
 //input record
@@ -92,6 +98,7 @@ $('#button-submit-filter').on('click',function(){
 		data : JSON.parse(datainput),
 		success: function(data){
 			get_data(data);
+			from_filter(true);
 			$('body').toggleClass('full-width semi-width');
 		}
 	});
@@ -154,15 +161,83 @@ $('#show-data').on('click','.item-detail',function(){
 	return true;
 });
 
+function set_pagination(){
+	if(the_data.data.pagination != null){
+		var limit = the_data.data.pagination[0];
+		var offset = the_data.data.pagination[1];
+		var total = the_data.data.pagination[2];
+		var iterasi = Math.ceil(total/limit);
+		//console.log('total: ' + total);
+		//console.log('Iterasi: '+ iterasi);
+		//console.log(total/limit);
+		//console.log('Perpage: '+ limit);
+		
+		html = '<nav aria-label="pagination-example">';
+		html +=	'<ul class="pagination justify-content-center">';
+		
+		if(offset == '0'){
+			html +=	'<li class="page-item disabled"><a href="javascript:void(0)" numb="" class="page-link">Prev</a></li>';
+		}else{
+			html +=	'<li class="page-item"><a href="javascript:void(0)" numb="'+(offset/limit)+'" class="page-link">Prev</a></li>';
+		}					
+		
+		for(var i = 0; i<iterasi; i++){
+			if(offset/limit == i){
+				html +=	'<li class="page-item active"><a href="javascript:void(0)" numb="'+(i+1)+'" class="page-link">'+(i+1)+'</a></li>';
+			}else{
+				html +=	'<li class="page-item"><a href="javascript:void(0)" numb="'+(i+1)+'" class="page-link">'+(i+1)+'</a></li>';
+			}
+		}
+		if((total - offset) <= limit){
+			html +=	'<li class="page-item disabled"><a class="page-link">Next</a></li>';
+		}else{
+			html +=	'<li class="page-item"><a href="javascript:void(0)" numb ="'+(offset/limit+2)+'" class="page-link">Next</a></li>';
+		}	
+		
+		html +=	'</ul>';
+		html +=	'</nav>';
+		$('.paging').html(html);
+	}
+}
+
+$('.paging').on('click','a.page-link',function(){
+	var limit = the_data.data.pagination[0];
+	var current_offset = ($(this).attr('numb') - 1) * limit;
+	if(fromfilter == false){
+		var datainput='{';
+		datainput += '"offset":'+current_offset+',';
+		datainput += '"submit":"sumbit"';
+		datainput += '}';
+		//console.log(datainput);
+	}else{
+		var datainput = generate_json_from_field("#form-filter");
+		datainput.length;
+		datainput = datainput.slice(0,(datainput.length-1));
+		datainput += ',"offset":"'+current_offset+'"}';
+		//console.log(datainput);
+	}
+	$.ajax({
+		type : "POST",
+		url  : targeturl+'/list',
+		dataType : "JSON",
+		data : JSON.parse(datainput),
+		success: function(data){
+			get_data(data);
+		}
+	});
+	return false;
+});
 
 function get_data(data){
 	the_data = data;
+	console.log(the_data);
 	if(data.type == 'table_default'){
 		hide_toolbar();
 		$('#show-data').html(generate_table());
 		if(the_data.data.filters != null){
 			$('.modal-filter .filter-body').html(generate_form(true));
 		}
+		set_pagination();
 	}else if(data.type == 'insert_default'){
 		$('#modal-add .modal-body').html(generate_form(false));
 		$('#modal-add').modal('show');		

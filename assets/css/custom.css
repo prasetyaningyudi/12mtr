@@ -351,6 +351,7 @@ html , body{
     position: fixed
 }
 body .container.body .right_col {
+    /* background: #F6F7FB */
     background: #F6F7FB
 }
 .nav-md .container.body .right_col {
