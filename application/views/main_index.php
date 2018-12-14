@@ -24,7 +24,7 @@
 		</div>
 
 		<div class="modal" id="modal-add" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
-		<form id="form-add">
+		<form id="form-add" enctype="multipart/form-data" method="post">
 			<div class="modal-dialog modal-lg">
 			  <!-- Modal content-->
 			  <div class="modal-content">
@@ -45,7 +45,7 @@
 		</div>	
 
 		<div class="modal" id="modal-edit" role="dialog">
-		<form id="form-edit">
+		<form id="form-edit"  enctype="multipart/form-data" method="post">
 			<div class="modal-dialog modal-lg">
 			  <!-- Modal content-->
 			  <div class="modal-content">
@@ -92,7 +92,7 @@
 			  <div class="modal-content">
 				<div class="modal-header">
 				  <button type="button" class="close" data-dismiss="modal">&times;</button>
-				  <h4 class="modal-title">Modal Delete</h4>
+				  <h4 class="modal-title">Modal Info</h4>
 				</div>
 				<div class="modal-body">
 				  <p>Some text in the modal.</p>
@@ -127,7 +127,9 @@
 		<div class="top_toolbar">
 			<div class="row">
 				<div class="col-md-6 col-sm-12 col-xs-12 toolbar-left align-middle">
-				TESSS
+					<div class="title-information">
+					
+					</div>
 				</div>
 				<div class="col-md-6 col-sm-12 col-xs-12 toolbar-right">
 					<div class="button-toolbar-item">

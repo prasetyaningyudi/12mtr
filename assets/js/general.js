@@ -1,6 +1,7 @@
 var the_data;
 var targeturl;
 var fromfilter;
+var globallimit;
 
 function initiation(url){
 	targeturl = url;
@@ -10,8 +11,8 @@ function initiation(url){
 		async : true,
 		dataType : 'json',
 		success : function(data){
-			get_data(data);
 			from_filter(false);
+			get_data(data);
 		}
 	});	
 }
@@ -34,7 +35,7 @@ $('.button-add').on('click',function(){
 });
 
 //saving record
-$('#button-save').on('click',function(){
+/* $('#button-save').on('click',function(){
 	var datainput = generate_json_from_field("#form-add");
 	//console.log(datainput);
 	$.ajax({
@@ -51,7 +52,33 @@ $('#button-save').on('click',function(){
 	});
 
 	return false;
+}); */
+
+$('#button-save').on('click',function(e){
+	//e.preventDefault();
+	var datainput = generate_form_data("#form-add");
+	console.log(datainput);
+	
+	$.ajax({
+		type : "POST",
+		url  : targeturl+'/insert',
+		data: datainput,
+		cache: false,
+		contentType: false,
+		processData: false,
+		success: function(data){
+			$('#modal-add').modal('hide');
+			//console.log(data);
+			from_filter(false);
+			get_data(JSON.parse(data));
+			$("#form-add").trigger("reset");
+			initiation(targeturl);			
+		}
+	});
+
+	return false;
 });
+
 
 //get data for update record
 $('#show-data').on('click','.item-edit',function(){
@@ -69,17 +96,21 @@ $('#show-data').on('click','.item-edit',function(){
 });
 
 //update data
-$('#button-update').on('click',function(){
-	var datainput = generate_json_from_field("#form-edit");
+$('#button-update').on('click',function(e){
+	//e.preventDefault();
+	var datainput = generate_form_data("#form-edit");
 	//console.log(datainput);
 	$.ajax({
 		type : "POST",
 		url  : targeturl+'/update',
-		dataType : "JSON",
-		data : JSON.parse(datainput),
+		data: datainput,
+		cache: false,
+		contentType: false,
+		processData: false,
 		success: function(data){
 			$('#modal-edit').modal('hide');
-			get_data(data);
+			from_filter(false);
+			get_data(JSON.parse(data));
 			initiation(targeturl);			
 		}
 	});
@@ -97,8 +128,8 @@ $('#button-submit-filter').on('click',function(){
 		dataType : "JSON",
 		data : JSON.parse(datainput),
 		success: function(data){
-			get_data(data);
 			from_filter(true);
+			get_data(data);
 			$('body').toggleClass('full-width semi-width');
 		}
 	});
@@ -123,6 +154,7 @@ $('#show-data').on('click','.item-delete',function(){
 		data : {id:id},
 		success: function(data){
 			$('#modal-delete').modal('hide');
+			from_filter(false);
 			get_data(data);
 			initiation(targeturl);
 		}
@@ -139,6 +171,7 @@ $('#show-data').on('click','.item-status',function(){
 		dataType : "JSON",
 		data : {id:id},
 		success: function(data){
+			from_filter(false);
 			get_data(data);
 			initiation(targeturl);
 		}
@@ -161,9 +194,43 @@ $('#show-data').on('click','.item-detail',function(){
 	return true;
 });
 
+function set_filter_title(){
+	if(fromfilter == true){
+		var html = '';
+		var j = 0
+		var myArray = [];
+		for(i=0;i<the_data.data.filters.length;i++){
+			if(the_data.data.filters[i].value != '' && the_data.data.filters[i].value != null){
+				if(the_data.data.filters[i].type == 'select'){
+					for(var k = 0; k<the_data.data.filters[i].options.length; k++){
+						//console.log(the_data.data.filters[i].options[k].value);
+						if(the_data.data.filters[i].options[k].value == the_data.data.filters[i].value){
+							myArray.push('<span class="text-body">'+the_data.data.filters[i].label+' : </span><span class=".text-secondary">'+the_data.data.filters[i].options[k].label+'</span>');
+						}
+					}
+				}else{
+					myArray.push('<span class="text-body">'+the_data.data.filters[i].label+' : </span><span class=".text-secondary">'+the_data.data.filters[i].value+'</span>');
+				}
+				j++;
+			}
+		}
+		if(j > 1){
+			html +=	'<span class="text-dark">'+j+' Filters <i class="fa fa-caret-right"></i></span> ';
+		}else{
+			html +=	'<span class="text-dark">A Filter <i class="fa fa-caret-right"></i></span> ';
+		}
+		html += ''+myArray.join(', ');
+		$('.title-information').html(html);
+	}else{
+		var html = '';
+		$('.title-information').html(html);
+	}
+}
+
 function set_pagination(){
 	if(the_data.data.pagination != null){
 		var limit = the_data.data.pagination[0];
+		globallimit = limit;
 		var offset = the_data.data.pagination[1];
 		var total = the_data.data.pagination[2];
 		var iterasi = Math.ceil(total/limit);
@@ -201,8 +268,7 @@ function set_pagination(){
 }
 
 $('.paging').on('click','a.page-link',function(){
-	var limit = the_data.data.pagination[0];
-	var current_offset = ($(this).attr('numb') - 1) * limit;
+	var current_offset = ($(this).attr('numb') - 1) * globallimit;
 	if(fromfilter == false){
 		var datainput='{';
 		datainput += '"offset":'+current_offset+',';
@@ -229,8 +295,9 @@ $('.paging').on('click','a.page-link',function(){
 });
 
 function get_data(data){
+	console.log('from filter : '+fromfilter);
 	the_data = data;
-	console.log(the_data);
+	
 	if(data.type == 'table_default'){
 		hide_toolbar();
 		$('#show-data').html(generate_table());
@@ -238,6 +305,7 @@ function get_data(data){
 			$('.modal-filter .filter-body').html(generate_form(true));
 		}
 		set_pagination();
+		set_filter_title();
 	}else if(data.type == 'insert_default'){
 		$('#modal-add .modal-body').html(generate_form(false));
 		$('#modal-add').modal('show');		
@@ -258,7 +326,8 @@ function get_data(data){
 		info += '</ul>';
 		$('#modal-info .modal-title').html('Information : ERROR');
 		$('#modal-info .modal-body').html('<div class="alert alert-light" role="alert">'+info+'</div>');
-		$('#modal-info').modal('show');		
+		$('#modal-info').modal('show');
+		set_filter_title();	
 	}else if(data.type == 'success'){
 		var i;
 		var info = '<ul>';
@@ -270,12 +339,38 @@ function get_data(data){
 		info += '</ul>';		
 		$('#modal-info .modal-title').html('Information : Success');
 		$('#modal-info .modal-body').html('<div class="alert alert-light" role="alert">'+info+'</div>');
-		$('#modal-info').modal('show');		
-	}
+		$('#modal-info').modal('show');
+		set_filter_title();			
+	}		
+}
+
+function generate_form_data(selector){
+	console.log('generate from data from field');
+	var field = $(selector).find( "[name]" );
+	var formData = new FormData();
+
+	$(field).each(function(index,element){
+		if($(this).is(':checkbox')){
+			if($(this).is( ':checked' )){
+				formData.append(element.name, element.value);
+			}else{
+				formData.append(element.name, 'off');
+			}
+		}else if($(this).is(':radio')){
+			if($(this).is( ':checked' )){
+				formData.append(element.name, element.value);
+			}
+		}else if($(this).is(':file')){
+			formData.append(element.name, $(this).prop('files')[0]);
+		}else{
+			formData.append(element.name, element.value);
+		}
+	});
+	return formData;
 }
 
 function generate_json_from_field(selector){
-	console.log('generate json from field from');
+	console.log('generate json from field form');
 	var field = $(selector).find( "[name]" );
 	var datainput='{';
 	var i= 0;
@@ -420,6 +515,10 @@ function set_field_form(data){
 			html += '</label>';
 			html += '</div>';
 		}
+	}else if(data.type == 'file'){
+		html += '<input type="file" name="'+data.name+'" id="'+data.name+'" value="'+data.value+'" class="form-control" placeholder="'+data.placeholder+'" ';					
+		html += field_classes(data.classes);
+		html += '>';
 	}
 	return html;
 }

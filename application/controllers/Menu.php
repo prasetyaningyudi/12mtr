@@ -27,7 +27,7 @@ class Menu extends CI_Controller {
 
 	public function list(){		
 		$filters = array();
-		$limit = array('10', '0');
+		$limit = array('3', '0');
 		$r_nama = '';
 		$r_parent = '';
 		$r_order = '';
@@ -183,6 +183,8 @@ class Menu extends CI_Controller {
 	
 	public function insert(){	
 		if(isset($_POST['submit'])){
+			//var_dump($_FILES);
+			//var_dump($_POST);
 			//validation
 			$error_info = array();
 			$error_status = false;
@@ -225,6 +227,7 @@ class Menu extends CI_Controller {
 				);				
 				echo json_encode($this->data['error']);
 			}else{
+				
 				if($_POST['parent'] != ''){
 					$filters = array();
 					$filters[] = "A.ID = '" . $_POST['parent'] . "'";
@@ -344,6 +347,14 @@ class Menu extends CI_Controller {
 				'placeholder'	=> '--Select Parent--',
 				'value' 		=> '',
 				'options'		=> $parent,
+				'classes' 		=> 'required full-width',
+			);	
+			$fields[] = (object) array(
+				'type' 			=> 'file',
+				'label' 		=> 'Tes Upload',
+				'name' 			=> 'file1',
+				'placeholder'	=> 'Select File',
+				'value' 		=> '',
 				'classes' 		=> 'required full-width',
 			);			
 			
