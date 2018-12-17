@@ -82,10 +82,16 @@ class Menu extends CI_Controller {
                 );
 			} else {
 				foreach ($data as $value) {
+					if($value->BMENU_NAME == null){
+						$menu_name = $value->MENU_NAME;
+					}else{
+						$menu_name = '&nbsp;&nbsp;&nbsp;'.$value->MENU_NAME;
+					}
+					
 					$body[$no_body] = array(
 						(object) array( 'classes' => ' hidden ', 'value' => $value->ID ),
 						(object) array( 'classes' => ' bold align-center ', 'value' => $no_body+1 ),
-						(object) array( 'classes' => ' align-left ', 'value' => $value->MENU_NAME ),
+						(object) array( 'classes' => ' align-left ', 'value' => $menu_name ),
 						(object) array( 'classes' => ' align-left ', 'value' => $value->PERMALINK ),
 						(object) array( 'classes' => ' align-center ', 'value' => '<i class="fa fa-'.$value->MENU_ICON.'"></i>' ),
 						(object) array( 'classes' => ' align-left ', 'value' => $value->MENU_ORDER ),

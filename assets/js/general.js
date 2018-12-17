@@ -655,6 +655,7 @@ function generate_modal(){
 function generate_table(){
 	console.log('generate table start');
 	var html = '';
+	html += '<div class="table-responsive">';
 	html += '<table class="table'+table_classes(the_data.data.classes)+'">';
 	html += '<thead>';
 	html += set_table_header();
@@ -663,6 +664,7 @@ function generate_table(){
 	html += set_table_body();
 	html += '</tbody>';
 	html += '</table>';
+	html += '</div>';
 	console.log('generate table finished');
 	return html;
 }
