@@ -15,10 +15,15 @@
 	padding-top: 15px;
 }
 .toolbar-right{
+	
+	/*
 	justify-content: flex-end;
 	display: flex;
+	*/
 }
 .button-toolbar-item{
+	text-transform: uppercase;
+	float:right;
 	text-align:center;
 	font-size:15px;
 	margin: 0px 10px;
@@ -87,9 +92,11 @@
         width: 100%;
         margin: 0;
     }
+	/*
 	.toolbar-right{
 		justify-content: center;	
 	}
+	*/
 	.toolbar-left{
 		text-align:center;
 	}

@@ -120,7 +120,9 @@
 				</div>
 			  </div>
 			</div>
-		</div>			
+		</div>
+
+		<div class="for_modal"></div>
 		<!-- end modal -->
 		
 		
@@ -132,31 +134,28 @@
 					</div>
 				</div>
 				<div class="col-md-6 col-sm-12 col-xs-12 toolbar-right">
-					<div class="button-toolbar-item">
-						<a href="javascript:void(0)" data-toggle="modal" data-target="#modal-detail">
-							<i style="font-size: 16px;" class="fa fa-layer-group"></i><br>TOOLBAR
+					<div class="button-toolbar-item button-filter">
+						<a href="javascript:void(0)">
+							<i style="font-size: 16px;" class="fa fa-filter"></i><br>FILTER
+						</a>
+					</div>									
+					<div class="button-toolbar-item button-pdf">
+						<a href="javascript:void(0)">
+							<i style="font-size: 16px;" class="fas fa-file-pdf"></i><br>PDF
+						</a>
+					</div>						
+					<div class="button-toolbar-item button-xls">
+						<a href="javascript:void(0)">
+							<i style="font-size: 16px;" class="fa fa-file-excel"></i><br>XLS
 						</a>
 					</div>					
 					<div class="button-toolbar-item button-add">
 						<a href="javascript:void(0)">
 							<i style="font-size: 16px;" class="fa fa-plus"></i><br>ADD
 						</a>
-					</div>								
-					<div class="button-toolbar-item button-xls">
-						<a href="javascript:void(0)">
-							<i style="font-size: 16px;" class="fa fa-file-excel"></i><br>XLS
-						</a>
-					</div>					
-					<div class="button-toolbar-item button-pdf">
-						<a href="javascript:void(0)">
-							<i style="font-size: 16px;" class="fas fa-file-pdf"></i><br>PDF
-						</a>
-					</div>			
-					<div class="button-toolbar-item button-filter">
-						<a href="javascript:void(0)">
-							<i style="font-size: 16px;" class="fa fa-filter"></i><br>FILTER
-						</a>
-					</div>									
+					</div>
+					<div class="for_toolbars">
+					</div>						
 					<div class="clearfix"></div>
 				</div>
 			</div>

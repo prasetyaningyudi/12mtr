@@ -2,6 +2,7 @@ var the_data;
 var targeturl;
 var fromfilter;
 var globallimit;
+var globalform;
 
 function initiation(url){
 	targeturl = url;
@@ -159,7 +160,7 @@ $('#show-data').on('click','.item-delete',function(){
 			initiation(targeturl);
 		}
 	});
-	return false;
+	return true;
 });
 
 //get data for update status record
@@ -341,7 +342,47 @@ function get_data(data){
 		$('#modal-info .modal-body').html('<div class="alert alert-light" role="alert">'+info+'</div>');
 		$('#modal-info').modal('show');
 		set_filter_title();			
-	}		
+	}else if(data.type == 'modal_form'){	
+		$('.for_modal').html(generate_modal());
+		var html = '<input role="button" type="reset" id="button-reset" name="reset" class="btn btn-info" value="reset">';
+		html += '<input role="button" type="submit" id="button-submit" name="submit" class="btn btn-primary" value="submit" style="margin-left: 30px;">';	
+		$('#'+the_data.data.id+' .modal-footer').html(html);		
+		$('#'+the_data.data.id+' .modal-body').html(generate_form(false));				
+		$('#'+the_data.data.id).modal('show');
+		onclik_submit();
+	}else if(data.type == 'modal_table'){
+		$('.for_modal').html(generate_modal());
+		$('#'+the_data.data.id+' .modal-body').html(generate_table());
+		var html = '<button type="button" class="mr-auto btn btn-secondary" data-dismiss="modal">Close</button>';
+		$('#'+the_data.data.id+' .modal-footer').html(html);		
+		$('#'+the_data.data.id).modal('show');
+	}
+}
+
+function onclik_submit(){
+	$('.for_modal #button-submit').on('click',function(e){
+		//e.preventDefault();
+		var datainput = generate_form_data("#form-"+the_data.data.id);
+		console.log(datainput);
+		
+		$.ajax({
+			type : "POST",
+			url  : the_data.data.target,
+			data: datainput,
+			cache: false,
+			contentType: false,
+			processData: false,
+			success: function(data){
+				$('#'+the_data.data.id).modal('hide');
+				//console.log(data);
+				from_filter(false);
+				get_data(JSON.parse(data));
+				$("#form-"+the_data.data.id).trigger("reset");	
+			}
+		});
+
+		return false;
+	});
 }
 
 function generate_form_data(selector){
@@ -561,7 +602,54 @@ function hide_toolbar(){
 		$(".button-filter").show();
 	}else{
 		$(".button-filter").hide();
-	}	
+	}
+	if(the_data.data.toolbars != null){
+		var i;
+		var html = '';
+		for(i=0; i<the_data.data.toolbars.length; i++){
+			html += '<div class="button-toolbar-item '+the_data.data.toolbars[i].class+'">';
+			html += '<a href="javascript:void(0)" onclick="show_modal(\''+the_data.data.toolbars[i].target+'\')">';
+			html += '<i style="font-size: 16px;" class="fa fa-'+the_data.data.toolbars[i].icon+'"></i><br>'+the_data.data.toolbars[i].label;
+			html += '</a>';
+			html += '</div>';
+		}
+		$('.top_toolbar .toolbar-right .for_toolbars').html(html);
+	}
+}
+
+function show_modal(target){
+	$.ajax({
+		type : "POST",
+		url  : target,
+		dataType : "JSON",
+		success: function(data){
+			get_data(data);
+		}
+	});
+	return true;	
+}
+
+function generate_modal(){
+	var html = '';
+	html += '<div class="modal" id="'+the_data.data.id+'" role="dialog">';
+	html += '<form id="form-'+the_data.data.id+'" enctype="multipart/form-data" method="post">';
+	html += '<div class="modal-dialog modal-lg">';
+	html += '<!-- Modal content-->';
+	html += '<div class="modal-content">';
+	html += '<div class="modal-header">';
+	html += '<button type="button" class="close" data-dismiss="modal">&times;</button>';
+	html += '<h4 class="modal-title">'+the_data.data.title+'</h4>';
+	html += '</div>';
+	html += '<div class="modal-body">';
+
+	html += '</div>';
+	html += '<div class="modal-footer">';
+	html += '</div>';
+	html += '</div>';
+	html += '</div>';
+	html += '</form>';
+	html += '</div>';
+	return html;
 }
 
 function generate_table(){

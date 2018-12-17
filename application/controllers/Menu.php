@@ -27,7 +27,7 @@ class Menu extends CI_Controller {
 
 	public function list(){		
 		$filters = array();
-		$limit = array('3', '0');
+		$limit = array('10', '0');
 		$r_nama = '';
 		$r_parent = '';
 		$r_order = '';
@@ -157,7 +157,21 @@ class Menu extends CI_Controller {
 			'value' 		=> $r_parent,
 			'options'		=> $parent,
 			'classes' 		=> 'required full-width',
-		);			
+		);
+
+		$toolbars = array();
+		$toolbars[] = (object) array(
+			'target' 		=> site_url( __CLASS__ ).'/modal_form',
+			'label' 		=> 'To Input',
+			'icon' 			=> 'layer-group',
+			'class' 		=> 'toolbar_input',
+		);		
+		$toolbars[] = (object) array(
+			'target' 		=> site_url( __CLASS__ ).'/modal_table',
+			'label' 		=> 'To Table',
+			'icon' 			=> 'table',
+			'class' 		=> 'toolbar_table',
+		);		
 	
 
 		$this->data['list'] = (object) array (
@@ -173,12 +187,255 @@ class Menu extends CI_Controller {
 				'xls'		=> true,
 				'pagination'=> $limit,
 				'filters'  	=> $fields,
+				'toolbars'	=> $toolbars,
 				'header'  	=> $header,
 				'body'  	=> $body,
 				'footer'  	=> null,
 			)
 		);		
 		echo json_encode($this->data['list']);
+	}
+	
+	public function modal_form(){
+		$parent = array();
+		$data = $this->menu_model->get_parent();
+		
+		if (empty($data)) {
+
+		} else {
+			foreach ($data as $value) {
+				$parent[] = (object) array('label'=>$value->MENU_NAME, 'value'=>$value->ID);
+			}
+		}			
+		
+		$fields = array();
+		$fields[] = (object) array(
+			'type' 			=> 'text',
+			'label' 		=> 'Name',
+			'name' 			=> 'name',
+			'placeholder'	=> 'menu name',
+			'value' 		=> '',
+			'classes' 		=> '',
+		);
+		$fields[] = (object) array(
+			'type' 			=> 'text',
+			'label' 		=> 'Permalink',
+			'name' 			=> 'permalink',
+			'placeholder'	=> 'example : employee, #',
+			'value' 		=> '',
+			'classes' 		=> '',
+		);
+		$fields[] = (object) array(
+			'type' 			=> 'text',
+			'label' 		=> 'Icon',
+			'name' 			=> 'icon',
+			'placeholder'	=> 'use fontawesome, example : plus, minus',
+			'value' 		=> '',
+			'classes' 		=> '',
+		);
+		$fields[] = (object) array(
+			'type' 			=> 'text',
+			'label' 		=> 'Order',
+			'name' 			=> 'order',
+			'placeholder'	=> 'please input number (integer) start from 1',
+			'value' 		=> '',
+			'classes' 		=> '',
+		);			
+		$fields[] = (object) array(
+			'type' 			=> 'select',
+			'label' 		=> 'Parent menu',
+			'name' 			=> 'parent',
+			'placeholder'	=> '--Select Parent--',
+			'value' 		=> '',
+			'options'		=> $parent,
+			'classes' 		=> 'required full-width',
+		);			
+		
+		$this->data['output'] = (object) array (
+			'type'  	=> 'modal_form',
+			'data'		=> (object) array (
+				'target'	=> site_url( __CLASS__ ).'/data_form',
+				'title'		=> 'Tes Modal Form',
+				'id'		=> 'modal-form-1',
+				'fields'  	=> $fields,
+				
+			)
+		);	
+		echo json_encode($this->data['output']);		
+	}
+	
+	public function modal_table(){
+		$filters = array();
+		$limit = array();
+		$data = $this->menu_model->get($filters, $limit);
+		//var_dump($data);
+		$total_data = count($this->menu_model->get($filters));
+		$limit[] = $total_data;
+		
+		//var_dump($data);
+
+		$no_body = 0;
+		$body= array();
+		if(isset($data)){
+            if (empty($data)) {
+                $body[$no_body] = array(
+                    (object) array ('colspan' => 100, 'classes' => ' empty bold align-center', 'value' => 'No Data')
+                );
+			} else {
+				foreach ($data as $value) {
+					$body[$no_body] = array(
+						(object) array( 'classes' => ' hidden ', 'value' => $value->ID ),
+						(object) array( 'classes' => ' bold align-center ', 'value' => $no_body+1 ),
+						(object) array( 'classes' => ' align-left ', 'value' => $value->MENU_NAME ),
+						(object) array( 'classes' => ' align-left ', 'value' => $value->PERMALINK ),
+						(object) array( 'classes' => ' align-center ', 'value' => '<i class="fa fa-'.$value->MENU_ICON.'"></i>' ),
+						(object) array( 'classes' => ' align-left ', 'value' => $value->MENU_ORDER ),
+						(object) array( 'classes' => ' align-left ', 'value' => $value->BMENU_NAME ),
+						(object) array( 'classes' => ' align-center ', 'value' => $value->STATUS ),
+					);
+					$no_body++;
+				}
+			}
+        } else {
+            $body[$no_body] = array(
+                (object) array ('colspan' => 100, 'classes' => ' empty bold align-center', 'value' => 'Filter First')
+            );
+        }
+		
+		$header = array(
+			array (
+				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'No'),
+				(object) array ('colspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'name'),					
+				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'permalink'),			
+				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'icon'),			
+				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'order'),			
+				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'parent'),			
+				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'status'),			
+			)		
+		);		
+		$this->data['output'] = (object) array (
+			'type'  	=> 'modal_table',
+			'data'		=> (object) array (
+				'title'		=> 'Tes Modal Table',
+				'id'		=> 'modal-form-2',
+				'header'	=> $header,
+				'body'		=> $body,
+				'classes'	=> '',
+			)
+		);	
+		echo json_encode($this->data['output']);		
+	}
+	
+	public function data_form(){
+		$error_info = array();
+		$error_status = false;
+		if($_POST['name'] == ''){
+			$error_info[] = 'Menu Name can not be null';
+			$error_status = true;
+		}
+		if($_POST['permalink'] == ''){
+			$error_info[] = 'Permalink can not be null';
+			$error_status = true;
+		}
+		if($_POST['order'] == ''){
+			$error_info[] = 'Menu Order can not be null';
+			$error_status = true;
+		}
+		if(strlen ($_POST['order']) > 2){
+			$error_info[] = 'Menu Order maximum 2 digit number';
+			$error_status = true;
+		}			
+		if(is_numeric($_POST['order']) == false){
+			$error_info[] = 'Wrong Menu Order format';
+			$error_status = true;
+		}else{
+			if(strpos($_POST['order'], '.') != false){
+				$error_info[] = 'Wrong Menu Order format';
+				$error_status = true;					
+			}
+			if (substr($_POST['order'], 0, 1) == '0' || substr($_POST['order'], 0, 2) == '00') {
+				$error_info[] = 'Wrong Menu Order format';
+				$error_status = true;	
+			}
+		}
+	
+		if($error_status == true){
+			$this->data['error'] = (object) array (
+				'type'  	=> 'error',
+				'data'		=> (object) array (
+					'info'	=> $error_info,
+				)
+			);				
+			echo json_encode($this->data['error']);
+		}else{
+			
+			if($_POST['parent'] != ''){
+				$filters = array();
+				$filters[] = "A.ID = '" . $_POST['parent'] . "'";
+				$data = $this->menu_model->get($filters);
+				$parent_menu_order = '';
+				if (empty($data)) {
+					//$parent[] = (object) array('label'=>'No Data', 'value'=>'nodata');
+				} else {
+					foreach ($data as $value) {
+						$parent_menu_order = $value->MENU_ORDER;
+					}
+				}	
+			}
+			$order = '';
+			if(strlen ($_POST['order']) == 1){
+				$order =  '0'.$_POST['order'];
+			}else{
+				$order =  $_POST['order'];
+			}
+			
+			if($_POST['icon'] == ''){
+				if($_POST['parent'] == ''){
+					$this->data['insert'] = array(
+							'MENU_NAME' => $_POST['name'],
+							'PERMALINK' => $_POST['permalink'],
+							'MENU_ORDER' => $order,
+							'MENU_ID' => null,
+						);
+				}else{
+					$this->data['insert'] = array(
+							'MENU_NAME' => $_POST['name'],
+							'PERMALINK' => $_POST['permalink'],
+							'MENU_ORDER' => $parent_menu_order.$order,
+							'MENU_ID' => $_POST['parent'],
+						);						
+				}
+			}else{
+				if($_POST['parent'] == ''){
+					$this->data['insert'] = array(
+							'MENU_NAME' => $_POST['name'],
+							'PERMALINK' => $_POST['permalink'],
+							'MENU_ICON' => $_POST['icon'],
+							'MENU_ORDER' => $order,
+							'MENU_ID' => null,
+						);
+				}else{
+					$this->data['insert'] = array(
+							'MENU_NAME' => $_POST['name'],
+							'PERMALINK' => $_POST['permalink'],
+							'MENU_ICON' => $_POST['icon'],
+							'MENU_ORDER' => $parent_menu_order.$order,
+							'MENU_ID' => $_POST['parent'],
+						);						
+				}
+			}
+			//var_dump($this->data['insert']);die;
+			$result = $this->menu_model->insert($this->data['insert']);
+			$info = array();
+			$info[] = 'Insert data success';
+			$this->data['success'] = (object) array (
+				'type'  	=> 'success',
+				'data'		=> (object) array (
+					'info'	=> $info,
+				)
+			);			
+			echo json_encode($this->data['success']);				
+		}		
 	}
 	
 	public function insert(){	
