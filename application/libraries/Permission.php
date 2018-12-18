@@ -6,7 +6,7 @@ $roles = array(
 			),
 			'administrator' => array (
 				'assignmenu' => array ('index', 'list', 'insert', 'update', 'delete'),
-				'menu' => array ('index', 'list', 'insert', 'update', 'update_status', 'delete'),
+				'menu' => array ('index', 'list', 'insert', 'update', 'update_status', 'delete', 'detail', 'modal_form', 'modal_table', 'data_form'),
 				'role' => array ('index', 'list', 'insert', 'update', 'update_status'),
 				'broadcast' => array ('index', 'list', 'insert', 'update', 'update_status', 'delete'),				
 			),

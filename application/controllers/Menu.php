@@ -15,7 +15,10 @@ class Menu extends CI_Controller {
 		$this->data['title'] = 'Menu';
 	}
 
-	public function index(){	
+	public function index(){
+		if($this->auth->get_permission($this->session->userdata('ROLE_NAME'), __CLASS__ , __FUNCTION__ ) == false){
+			redirect ('authentication/unauthorized');
+		}		
 		$this->data['subtitle'] = 'List';
 		$this->data['class'] = __CLASS__;
 		$this->load->view('section_header', $this->data);
@@ -25,7 +28,10 @@ class Menu extends CI_Controller {
 		$this->load->view('section_footer');			
 	}
 
-	public function list(){		
+	public function list(){
+		if($this->auth->get_permission($this->session->userdata('ROLE_NAME'), __CLASS__ , __FUNCTION__ ) == false){
+			redirect ('authentication/unauthorized');
+		}		
 		$filters = array();
 		$limit = array('10', '0');
 		$r_nama = '';
@@ -203,6 +209,9 @@ class Menu extends CI_Controller {
 	}
 	
 	public function modal_form(){
+		if($this->auth->get_permission($this->session->userdata('ROLE_NAME'), __CLASS__ , __FUNCTION__ ) == false){
+			redirect ('authentication/unauthorized');
+		}		
 		$parent = array();
 		$data = $this->menu_model->get_parent();
 		
@@ -271,6 +280,9 @@ class Menu extends CI_Controller {
 	}
 	
 	public function modal_table(){
+		if($this->auth->get_permission($this->session->userdata('ROLE_NAME'), __CLASS__ , __FUNCTION__ ) == false){
+			redirect ('authentication/unauthorized');
+		}		
 		$filters = array();
 		$limit = array();
 		$data = $this->menu_model->get($filters, $limit);
@@ -333,6 +345,9 @@ class Menu extends CI_Controller {
 	}
 	
 	public function data_form(){
+		if($this->auth->get_permission($this->session->userdata('ROLE_NAME'), __CLASS__ , __FUNCTION__ ) == false){
+			redirect ('authentication/unauthorized');
+		}		
 		$error_info = array();
 		$error_status = false;
 		if($_POST['name'] == ''){
@@ -444,7 +459,10 @@ class Menu extends CI_Controller {
 		}		
 	}
 	
-	public function insert(){	
+	public function insert(){
+		if($this->auth->get_permission($this->session->userdata('ROLE_NAME'), __CLASS__ , __FUNCTION__ ) == false){
+			redirect ('authentication/unauthorized');
+		}		
 		if(isset($_POST['submit'])){
 			//var_dump($_FILES);
 			//var_dump($_POST);
@@ -633,7 +651,10 @@ class Menu extends CI_Controller {
 		}
 	}
 	
-	public function update(){		
+	public function update(){
+		if($this->auth->get_permission($this->session->userdata('ROLE_NAME'), __CLASS__ , __FUNCTION__ ) == false){
+			redirect ('authentication/unauthorized');
+		}		
 		if(isset($_POST['submit'])){
 			//validation
 			$error_info = array();
@@ -854,6 +875,9 @@ class Menu extends CI_Controller {
 	}
 	
 	public function detail($id=null){
+		if($this->auth->get_permission($this->session->userdata('ROLE_NAME'), __CLASS__ , __FUNCTION__ ) == false){
+			redirect ('authentication/unauthorized');
+		}		
 		if(isset($_POST['id']) and $_POST['id'] != null){
 			$filters = array();
 			$filters[] = "A.ID = ". $_POST['id'];
@@ -920,7 +944,10 @@ class Menu extends CI_Controller {
 		}
 	}
 	
-	public function update_status(){		
+	public function update_status(){
+		if($this->auth->get_permission($this->session->userdata('ROLE_NAME'), __CLASS__ , __FUNCTION__ ) == false){
+			redirect ('authentication/unauthorized');
+		}		
 		if(isset($_POST['id']) and $_POST['id'] != null){
 			$filters = array();
 			$filters[] = "A.ID = ". $_POST['id'];
@@ -966,6 +993,9 @@ class Menu extends CI_Controller {
 	}
 	
 	public function delete(){
+		if($this->auth->get_permission($this->session->userdata('ROLE_NAME'), __CLASS__ , __FUNCTION__ ) == false){
+			redirect ('authentication/unauthorized');
+		}		
 		$this->data['delete'] = array(
 				'ID' => $_POST['id'],
 			);		
