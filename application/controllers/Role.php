@@ -39,8 +39,6 @@ class Role extends CI_Controller {
 		$filters = array();
 		$limit = array('10', '0');
 		$r_nama = '';
-		$r_parent = '';
-		$r_order = '';
 		$r_status = '';
 
 		//var_dump($_POST['nama']);
@@ -265,10 +263,6 @@ class Role extends CI_Controller {
 			}			
 		}else{
 			$r_nama = '';
-			$r_permalink = '';
-			$r_icon = '';
-			$r_order = '';
-			$r_parent = '';
 			
 			$filter = array();
 			$filter[] = "ID = ". $_POST['id'];
