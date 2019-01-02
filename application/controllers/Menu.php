@@ -10,9 +10,12 @@ class Menu extends CI_Controller {
 		$this->load->library('auth');			
 		$this->load->helper('url');			
 		$this->load->database();
-		$this->load->model('menu_model');	
+		$this->load->model('menu_model');
+		$this->data['menu'] = $this->menu_model->get_menu($this->session->userdata('ROLE_ID'));
+		$this->data['sub_menu'] = $this->menu_model->get_sub_menu($this->session->userdata('ROLE_ID'));				
 		$this->data['error'] = array();
 		$this->data['title'] = 'Menu';
+		//var_dump($this->data['menu']);
 	}
 
 	public function index(){
