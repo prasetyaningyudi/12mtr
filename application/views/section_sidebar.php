@@ -5,7 +5,7 @@
         <div class="col-md-3 left_col">
           <div class="left_col scroll-view">
             <div class="navbar nav_title" style="border: 0;">
-              <a href="index.html" class="site_title"><i class="fa fa-paw"></i> <span>Utakata</span></a>
+              <a href="<?php echo base_url(); ?>" class="site_title"><i class="fa fa-paw"></i> <span>Utakata</span></a>
             </div>
 
             <div class="clearfix"></div>
@@ -17,7 +17,7 @@
               </div>
               <div class="profile_info">
                 <span>Welcome,</span>
-                <h2>John Doe</h2>
+                <h2><?php echo $this->session->USERNAME; ?></h2>
               </div>
             </div>
             <!-- /menu profile quick info -->
@@ -27,28 +27,37 @@
             <!-- sidebar menu -->
             <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
               <div class="menu_section">
-                <h3>General</h3>
+                <h3><?php echo $this->session->ROLE_NAME; ?></h3>
                 <ul class="nav side-menu">
-                  <li><a><i class="fa fa-home"></i> Home <span class="fa fa-chevron-down"></span></a>
+				<?php foreach($menu as $value): ?>
+                  <li> 
+				  <?php if($value->PERMALINK == '#' OR $value->PERMALINK == '' OR $value->PERMALINK == NULL): ?>
+					<a><i class="fa fa-<?php echo $value->MENU_ICON; ?>"></i> <?php echo $value->MENU_NAME; ?> <span class="fa fa-chevron-down"></span></a>
+				  <?php else: ?>
+				    <?php echo '<a href="'.$value->PERMALINK.'">'; ?>
+				    <i class="fa fa-<?php echo $value->MENU_ICON; ?>"></i> <?php echo $value->MENU_NAME; ?></a>
+				  <?php endif; ?>
                     <ul class="nav child_menu">
-                      <li><a href="index.html">Dashboard</a></li>
-                      <li><a href="index2.html">Dashboard2</a></li>
-                      <li><a href="index3.html">Dashboard3</a></li>
+					  <?php foreach($sub_menu as $val): ?>
+						  <?php if($value->ID == $val->MENU_ID): ?>
+						  <li>
+							  <?php if($val->PERMALINK == '#' OR $val->PERMALINK == '' OR $val->PERMALINK == NULL): ?>
+							  <a>
+							  <?php else: ?>
+							  <?php echo '<a href="'.$val->PERMALINK.'">'; ?>
+							  <?php endif; ?>
+							  <?php echo $val->MENU_NAME; ?>
+							  </a>
+						  </li>
+						  <?php endif; ?>
+					  <?php endforeach; ?>
                     </ul>
                   </li>
-                  <li><a><i class="fa fa-edit"></i> Forms <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      <li><a href="form.html">General Form</a></li>
-                      <li><a href="form_advanced.html">Advanced Components</a></li>
-                      <li><a href="form_validation.html">Form Validation</a></li>
-                      <li><a href="form_wizards.html">Form Wizard</a></li>
-                      <li><a href="form_upload.html">Form Upload</a></li>
-                      <li><a href="form_buttons.html">Form Buttons</a></li>
-                    </ul>
-                  </li>
+				  <?php endforeach; ?>
                 </ul>
               </div>
-              <div class="menu_section">
+			  
+              <!-- <div class="menu_section">
                 <h3>Live On</h3>
                 <ul class="nav side-menu">
                   <li><a><i class="fa fa-bug"></i> Additional Pages <span class="fa fa-chevron-down"></span></a>
@@ -72,7 +81,7 @@
                   </li>                  
                   <li><a href="index2.html"><i class="fa fa-laptop"></i> Landing Page <span class="label label-success pull-right">Coming Soon</span></a></li>
                 </ul>
-              </div>
+              </div> -->
 
             </div>
             <!-- /sidebar menu -->
@@ -88,7 +97,7 @@
               <a data-toggle="tooltip" data-placement="top" title="Lock">
                 <i class="fa fa-lock"></i>
               </a>
-              <a data-toggle="tooltip" data-placement="top" title="Logout" href="login.html">
+              <a data-toggle="tooltip" data-placement="top" title="Logout" href="<?php echo base_url().'authentication/logout/'; ?>">
                 <i class="fas fa-sign-out-alt"></i>
               </a>
             </div>

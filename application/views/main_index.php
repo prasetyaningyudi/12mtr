@@ -65,7 +65,7 @@
 		</div>
 
 		<div class="modal" id="modal-delete" role="dialog">
-		<form id="form-delete">
+		<form id="form-delete" method="post">
 			<div class="modal-dialog modal-lg">
 			  <!-- Modal content-->
 			  <div class="modal-content">
