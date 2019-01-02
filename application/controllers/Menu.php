@@ -632,16 +632,7 @@ class Menu extends CI_Controller {
 				'value' 		=> '',
 				'options'		=> $parent,
 				'classes' 		=> 'required full-width',
-			);	
-			$fields[] = (object) array(
-				'type' 			=> 'file',
-				'label' 		=> 'Tes Upload',
-				'name' 			=> 'file1',
-				'placeholder'	=> 'Select File',
-				'value' 		=> '',
-				'classes' 		=> 'required full-width',
-			);			
-			
+			);				
 
 			$this->data['insert'] = (object) array (
 				'type'  	=> 'insert_default',

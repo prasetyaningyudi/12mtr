@@ -12,6 +12,7 @@ class User extends CI_Controller {
 		$this->load->database();
 		$this->load->model('role_model');
 		$this->load->model('user_model');
+		$this->load->model('user_info_model');
 		$this->load->model('menu_model');
 		$this->data['menu'] = $this->menu_model->get_menu($this->session->userdata('ROLE_ID'));
 		$this->data['sub_menu'] = $this->menu_model->get_sub_menu($this->session->userdata('ROLE_ID'));				
@@ -74,7 +75,6 @@ class User extends CI_Controller {
 		$data = $this->user_model->get($filters, $limit);
 		$total_data = count($this->user_model->get($filters));
 		$limit[] = $total_data;
-		
 		//var_dump($data);
 
 		$no_body = 0;
@@ -95,6 +95,9 @@ class User extends CI_Controller {
 						(object) array( 'classes' => ' align-left ', 'value' => $value->USERNAME ),
 						(object) array( 'classes' => ' align-center ', 'value' => $value->STATUS ),
 						(object) array( 'classes' => ' align-center ', 'value' => $value->ROLE_NAME ),
+						(object) array( 'classes' => ' align-center ', 'value' => '<a href="javascript:void(0)" title="edit" onclick="show_modal(\'user/m_form_user_info/'.$value->ID.'/\')"><i style="font-size: 16px;" class="fas fa-user-edit"></i></a></a>' ),
+						(object) array( 'classes' => ' align-center ', 'value' => '<a href="javascript:void(0)" title="info" onclick="show_modal(\'user/m_form_user_info/'.$value->ID.'/\')">
+						<i style="font-size: 16px;" class="fas fa-user-tag"></i></a>' ),
 					);
 					$no_body++;				
 					}
@@ -112,6 +115,7 @@ class User extends CI_Controller {
 				(object) array ('colspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'username'),										
 				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'status'),			
 				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'role'),			
+				(object) array ('rowspan' => 1, 'colspan' => '2' ,'classes' => 'bold align-center capitalize', 'value' => 'User Info'),			
 			)		
 		);
 
@@ -198,6 +202,206 @@ class User extends CI_Controller {
 		}
 		echo json_encode($this->data['list']);
 	}
+	
+	public function m_form_user_info($user_id=null){
+		if($this->auth->get_permission($this->session->userdata('ROLE_NAME'), __CLASS__ , __FUNCTION__ ) == false){
+			redirect ('authentication/unauthorized');
+		}
+		
+		if($user_id != null){	
+			$r_alias = '';
+			$r_email = '';
+			$r_phone = '';
+			$r_address = '';
+			$r_photo = '';
+			
+			$filter = array();
+			$filter[] = "USER_ID = '". $user_id. "'";
+			$this->data['result'] = $this->user_info_model->get($filter);
+			$fields = array();
+			if (!empty($this->data['result'])){
+				foreach($this->data['result'] as $value){
+					$r_id 	= $value->ID;
+					$r_alias = $value->ALIAS;
+					$r_email = $value->EMAIL;
+					$r_phone = $value->PHONE;
+					$r_address = $value->ADDRESS;
+					$r_photo = $value->PHOTO_1;
+				}
+				$fields[] = (object) array(
+					'type' 		=> 'hidden',
+					'label' 	=> 'id',
+					'name' 		=> 'id',
+					'value' 	=> $r_id,
+					'classes' 	=> '',
+				);				
+			}
+			$fields[] = (object) array(
+				'type' 		=> 'hidden',
+				'label' 	=> 'user_id',
+				'name' 		=> 'user_id',
+				'value' 	=> $user_id,
+				'classes' 	=> '',
+			);			
+						
+			$fields[] = (object) array(
+				'type' 			=> 'text',
+				'label' 		=> 'Alias',
+				'name' 			=> 'alias',
+				'placeholder'	=> 'user alias',
+				'value' 		=> $r_alias,
+				'classes' 		=> 'full-width',
+			);
+			$fields[] = (object) array(
+				'type' 			=> 'text',
+				'label' 		=> 'Email',
+				'name' 			=> 'email',
+				'placeholder'	=> 'email',
+				'value' 		=> $r_email,
+				'classes' 		=> '',
+			);
+			$fields[] = (object) array(
+				'type' 			=> 'text',
+				'label' 		=> 'Phone',
+				'name' 			=> 'phone',
+				'placeholder'	=> 'phone',
+				'value' 		=> $r_phone,
+				'classes' 		=> '',
+			);
+			$fields[] = (object) array(
+				'type' 			=> 'textarea',
+				'label' 		=> 'Address',
+				'name' 			=> 'address',
+				'placeholder'	=> 'address',
+				'value' 		=> $r_address,
+				'classes' 		=> 'full-width',
+			);
+			if (!empty($this->data['result'])){
+				$fields[] = (object) array(
+					'type' 			=> 'file',
+					'label' 		=> 'Upload Photo',
+					'name' 			=> 'photo',
+					'placeholder'	=> 'Select Photo',
+					'value' 		=> '',
+					'classes' 		=> 'required',
+				);				
+				$fields[] = (object) array(
+					'type' 			=> 'info',
+					'label' 		=> 'Recent Photo',
+					'name' 			=> 'recent_photo',
+					'value' 		=> '<img width="256px" src="'.$r_photo.'" alt="recent_photo" />',
+					'classes' 		=> 'required',
+				);			
+			}else{
+				$fields[] = (object) array(
+					'type' 			=> 'file',
+					'label' 		=> 'Upload Photo',
+					'name' 			=> 'photo',
+					'placeholder'	=> 'Select Photo',
+					'value' 		=> '',
+					'classes' 		=> 'required full-width',
+				);				
+			}
+			$this->data['output'] = (object) array (
+				'type'  	=> 'modal_form',
+				'data'		=> (object) array (
+					'target'	=> site_url( __CLASS__ ).'/insert_user_info',
+					'title'		=> 'User Information',
+					'id'		=> 'modal-form-1',
+					'fields'  	=> $fields,
+					
+				)
+			);	
+			echo json_encode($this->data['output']);
+		}
+	}
+	
+	public function insert_user_info(){
+		if($this->auth->get_permission($this->session->userdata('ROLE_NAME'), __CLASS__ , __FUNCTION__ ) == false){
+			redirect ('authentication/unauthorized');
+		}
+		$success_upload = false;
+		$error_info = array();
+		$error_status = false;
+		if($_POST['alias'] == ''){
+			$error_info[] = 'User Alias can not be null';
+			$error_status = true;
+		}
+		if($_POST['email'] != '' or $_POST['email'] != null){
+			if (filter_var($_POST['email'], FILTER_VALIDATE_EMAIL) == false) {
+				$error_info[] = 'Wrong email format';
+				$error_status = true;			
+			}
+		}
+		if(isset($_FILES["photo"])){
+			if($_FILES["photo"] != null){
+				$allowed_exts = array("gif", "jpeg", "jpg", "png");
+				$extension = explode("/", $_FILES["photo"]["type"]);
+				$extension = end($extension);
+				$true_photo = false;
+				foreach($allowed_exts as $val){
+					if($extension == $val){
+						$true_photo = true;
+					}
+				}
+				if($true_photo == false){
+					$error_info[] = 'Only accept image';
+					$error_status = true;				
+				}
+			}
+			//upload file
+			$filename = $_FILES['photo']['name'];
+			$target_dir = FCPATH."public/photos/";
+			$uniq = date('YmdHis');
+			$rename = $uniq . '_' . $filename;
+			$success_upload = move_uploaded_file($_FILES["photo"]["tmp_name"], $target_dir . $rename);
+			
+			if(!$success_upload){
+				$error_info[] = 'Error upload photo';
+				$error_status = true;					
+			}			
+		}		
+	
+		if($error_status == true){
+			$this->data['error'] = (object) array (
+				'type'  	=> 'error',
+				'data'		=> (object) array (
+					'info'	=> $error_info,
+				)
+			);				
+			echo json_encode($this->data['error']);
+		}else{
+			if($success_upload){
+				$this->data['insert'] = array(
+						'ALIAS' => $_POST['alias'],
+						'EMAIL' => $_POST['email'],
+						'PHONE' => $_POST['phone'],
+						'ADDRESS' => $_POST['address'],
+						'PHOTO_1' => base_url().'public/photos/'.$rename,
+						'USER_ID' => $_POST['user_id'],
+					);					
+			}else{
+				$this->data['insert'] = array(
+						'ALIAS' => $_POST['alias'],
+						'EMAIL' => $_POST['email'],
+						'PHONE' => $_POST['phone'],
+						'ADDRESS' => $_POST['address'],
+						'USER_ID' => $_POST['user_id'],
+					);					
+			}					
+			//var_dump($this->data['insert']);die;
+			$result = $this->user_info_model->insert($this->data['insert']);
+			$info = array();
+			$info[] = 'Insert data success';
+			$this->data['success'] = (object) array (
+				'type'  	=> 'success',
+				'data'		=> (object) array (
+					'info'	=> $info,
+				)
+			);			
+			echo json_encode($this->data['success']);				
+		}		
+	}	
 	
 	public function insert(){
 		if($this->auth->get_permission($this->session->userdata('ROLE_NAME'), __CLASS__ , __FUNCTION__ ) == false){

@@ -560,6 +560,8 @@ function set_field_form(data){
 		html += '<input type="file" name="'+data.name+'" id="'+data.name+'" value="'+data.value+'" class="form-control" placeholder="'+data.placeholder+'" ';					
 		html += field_classes(data.classes);
 		html += '>';
+	}else if(data.type == 'info'){
+		html += '<div class="">'+data.value+'</div>';
 	}
 	return html;
 }
