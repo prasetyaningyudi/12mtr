@@ -9,7 +9,11 @@
               <ul class="nav navbar-nav navbar-right">
                 <li class="">
                   <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                    <img src="<?php echo base_url(); ?>assets/images/img.jpg" alt=""><?php echo $this->session->USERNAME; ?>
+					<?php if($this->session->PHOTO != null or $this->session->PHOTO != ''): ?>
+						<img src="<?php echo $this->session->PHOTO; ?>" alt=""><?php echo $this->session->USERNAME; ?>
+					<?php else: ?>
+						<img src="<?php echo base_url(); ?>assets/images/avatar.png" alt=""><?php echo $this->session->USERNAME; ?>
+					<?php endif; ?>
                     <span class=" fa fa-angle-down"></span>
                   </a>
                   <ul class="dropdown-menu dropdown-usermenu pull-right">

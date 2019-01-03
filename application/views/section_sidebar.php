@@ -13,7 +13,11 @@
             <!-- menu profile quick info -->
             <div class="profile clearfix">
               <div class="profile_pic">
-                <img src="<?php echo base_url(); ?>assets/images/img.jpg" alt="..." class="img-circle profile_img">
+				<?php if($this->session->PHOTO != null or $this->session->PHOTO != ''): ?>
+					<img src="<?php echo $this->session->PHOTO; ?>" alt="Photo profile" class="img-circle profile_img">
+				<?php else: ?>
+					<img src="<?php echo base_url(); ?>assets/images/avatar.png" alt="Photo profile" class="img-circle profile_img">
+				<?php endif; ?>			  
               </div>
               <div class="profile_info">
                 <span>Welcome,</span>

@@ -96,7 +96,7 @@ class User extends CI_Controller {
 						(object) array( 'classes' => ' align-center ', 'value' => $value->STATUS ),
 						(object) array( 'classes' => ' align-center ', 'value' => $value->ROLE_NAME ),
 						(object) array( 'classes' => ' align-center ', 'value' => '<a href="javascript:void(0)" title="edit" onclick="show_modal(\'user/m_form_user_info/'.$value->ID.'/\')"><i style="font-size: 16px;" class="fas fa-user-edit"></i></a></a>' ),
-						(object) array( 'classes' => ' align-center ', 'value' => '<a href="javascript:void(0)" title="info" onclick="show_modal(\'user/m_form_user_info/'.$value->ID.'/\')">
+						(object) array( 'classes' => ' align-center ', 'value' => '<a href="javascript:void(0)" title="info" onclick="show_modal(\'user/m_user_info/'.$value->ID.'/\')">
 						<i style="font-size: 16px;" class="fas fa-user-tag"></i></a>' ),
 					);
 					$no_body++;				
@@ -236,6 +236,7 @@ class User extends CI_Controller {
 					'classes' 	=> '',
 				);				
 			}
+
 			$fields[] = (object) array(
 				'type' 		=> 'hidden',
 				'label' 	=> 'user_id',
@@ -283,15 +284,21 @@ class User extends CI_Controller {
 					'name' 			=> 'photo',
 					'placeholder'	=> 'Select Photo',
 					'value' 		=> '',
-					'classes' 		=> 'required',
+					'classes' 		=> '',
 				);				
 				$fields[] = (object) array(
 					'type' 			=> 'info',
 					'label' 		=> 'Recent Photo',
+					'value' 		=> "<img width='256px' alt='recent_photo' src='".$r_photo."'/>",
+					'classes' 		=> '',
+				);
+				$fields[] = (object) array(
+					'type' 			=> 'hidden',
+					'label' 		=> 'Recent Photo',
 					'name' 			=> 'recent_photo',
-					'value' 		=> '<img width="256px" src="'.$r_photo.'" alt="recent_photo" />',
-					'classes' 		=> 'required',
-				);			
+					'value' 		=> $r_photo,
+					'classes' 		=> '',
+				);				
 			}else{
 				$fields[] = (object) array(
 					'type' 			=> 'file',
@@ -299,7 +306,7 @@ class User extends CI_Controller {
 					'name' 			=> 'photo',
 					'placeholder'	=> 'Select Photo',
 					'value' 		=> '',
-					'classes' 		=> 'required full-width',
+					'classes' 		=> 'full-width',
 				);				
 			}
 			$this->data['output'] = (object) array (
@@ -359,7 +366,7 @@ class User extends CI_Controller {
 			if(!$success_upload){
 				$error_info[] = 'Error upload photo';
 				$error_status = true;					
-			}			
+			}
 		}		
 	
 		if($error_status == true){
@@ -379,7 +386,12 @@ class User extends CI_Controller {
 						'ADDRESS' => $_POST['address'],
 						'PHOTO_1' => base_url().'public/photos/'.$rename,
 						'USER_ID' => $_POST['user_id'],
-					);					
+					);
+				if($_POST['recent_photo'] != null or $_POST['recent_photo'] != ''){
+					$recent_photo = explode('/', $_POST['recent_photo']);
+					$recent_photo = end($recent_photo);
+					unlink(FCPATH."public/photos/".$recent_photo);
+				}
 			}else{
 				$this->data['insert'] = array(
 						'ALIAS' => $_POST['alias'],
@@ -390,18 +402,92 @@ class User extends CI_Controller {
 					);					
 			}					
 			//var_dump($this->data['insert']);die;
-			$result = $this->user_info_model->insert($this->data['insert']);
-			$info = array();
-			$info[] = 'Insert data success';
-			$this->data['success'] = (object) array (
-				'type'  	=> 'success',
-				'data'		=> (object) array (
-					'info'	=> $info,
-				)
-			);			
+			if(isset($_POST['id'])){
+				if($_POST['id'] != null or $_POST['id'] != ''){
+					$result = $this->user_info_model->update($this->data['insert'], $_POST['id']);
+					$info = array();
+					$info[] = 'Update data success';
+					$this->data['success'] = (object) array (
+						'type'  	=> 'success',
+						'data'		=> (object) array (
+							'info'	=> $info,
+						)
+					);						
+				}
+			}else{
+				$result = $this->user_info_model->insert($this->data['insert']);
+				$info = array();
+				$info[] = 'Insert data success';
+				$this->data['success'] = (object) array (
+					'type'  	=> 'success',
+					'data'		=> (object) array (
+						'info'	=> $info,
+					)
+				);					
+			}		
 			echo json_encode($this->data['success']);				
 		}		
-	}	
+	}
+	
+	public function m_user_info($id = null){
+		if($this->auth->get_permission($this->session->userdata('ROLE_NAME'), __CLASS__ , __FUNCTION__ ) == false){
+			redirect ('authentication/unauthorized');
+		}
+		if($id != null){
+			$filters = array();
+			$filters[] = "USER_ID = '". $id. "'";
+			$data = $this->user_info_model->get($filters);
+			
+			$body= array();			
+			if (empty($data)) {
+                $body[] = array(
+                    (object) array ('colspan' => 100, 'classes' => ' empty bold align-center', 'value' => 'No Data')
+                );
+			} else {
+				foreach($data as $value){
+					$body[] = array(
+						(object) array( 'classes' => ' bold align-left ', 'value' => 'Profile Photo' ),					
+						(object) array( 'classes' => ' align-left ', 'value' => "<img src='".$value->PHOTO_1."' />" ),
+					);					
+					$body[] = array(
+						(object) array( 'classes' => ' bold align-left ', 'value' => 'Alias' ),
+						(object) array( 'classes' => ' align-left ', 'value' => $value->ALIAS ),
+					);
+					$body[] = array(
+						(object) array( 'classes' => ' bold align-left ', 'value' => 'Email' ),
+						(object) array( 'classes' => ' align-left ', 'value' => $value->EMAIL ),
+					);
+					$body[] = array(
+						(object) array( 'classes' => ' bold align-left ', 'value' => 'Phone' ),
+						(object) array( 'classes' => ' align-left ', 'value' => $value->PHONE ),
+					);
+					$body[] = array(
+						(object) array( 'classes' => ' bold align-left ', 'value' => 'Address' ),
+						(object) array( 'classes' => ' align-left ', 'value' => $value->ADDRESS ),
+					);
+				}
+			}
+			
+			$header = array(
+				array (
+					(object) array ('rowspan' => 1, 'classes' => 'bold align-left capitalize', 'value' => 'Label'),
+					(object) array ('colspan' => 1, 'classes' => 'bold align-left capitalize', 'value' => 'Value'),	
+				)		
+			);			
+			
+			$this->data['detail'] = (object) array (
+				'type'  	=> 'modal_table',
+				'data'		=> (object) array (
+					'title'		=> 'Detail User Info',
+					'id'		=> 'modal-table-2',
+					'header'	=> $header,
+					'body'		=> $body,
+					'classes'	=> '',
+				)
+			);			
+			echo json_encode($this->data['detail']);
+		}
+	}
 	
 	public function insert(){
 		if($this->auth->get_permission($this->session->userdata('ROLE_NAME'), __CLASS__ , __FUNCTION__ ) == false){

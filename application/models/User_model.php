@@ -5,15 +5,18 @@ class User_model extends CI_Model {
 	
 	private $_table1 = "user";
 	private $_table2 = "role";
+	private $_table3 = "user_info";
 
     public function __construct(){
 		parent::__construct();
     }
 
 	public function get($filters=null, $limit=null){
-		$sql = "SELECT A.*, B.ID BID, B.ROLE_NAME FROM " . $this->_table1 . " A ";
+		$sql = "SELECT A.*, B.ID BID, B.ROLE_NAME, C.PHOTO_1 FROM " . $this->_table1 . " A ";
 		$sql .= " LEFT JOIN " . $this->_table2 . "  B";
-		$sql .= " ON A.ROLE_ID = B.ID";
+		$sql .= " ON A.ROLE_ID = B.ID";		
+		$sql .= " LEFT JOIN " . $this->_table3 . "  C";
+		$sql .= " ON A.ID = C.USER_ID";
 		$sql .= " WHERE 1=1";
 		if(isset($filters) and $filters != null){
 			foreach ($filters as $filter) {
