@@ -72,6 +72,7 @@ class User extends CI_Controller {
 			}			
 		}
 		
+		$filters[] = "A.USERNAME != 'prsty'";
 		$data = $this->user_model->get($filters, $limit);
 		$total_data = count($this->user_model->get($filters));
 		$limit[] = $total_data;
@@ -86,10 +87,7 @@ class User extends CI_Controller {
                 );
 			} else {
 				foreach ($data as $value) {
-					if($value->USERNAME == 'prsty'){
-						
-					}else{
-						$body[$no_body] = array(
+					$body[$no_body] = array(
 						(object) array( 'classes' => ' hidden ', 'value' => $value->ID ),
 						(object) array( 'classes' => ' bold align-left ', 'value' => $no_body+1 ),
 						(object) array( 'classes' => ' align-left ', 'value' => $value->USERNAME ),
@@ -100,7 +98,6 @@ class User extends CI_Controller {
 						<i style="font-size: 16px;" class="fas fa-user-tag"></i></a>' ),
 					);
 					$no_body++;				
-					}
 				}
 			}
         } else {
