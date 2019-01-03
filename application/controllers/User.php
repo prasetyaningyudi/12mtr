@@ -45,6 +45,11 @@ class User extends CI_Controller {
 		$r_alias = '';
 		$r_status = '';
 
+		if($this->session->userdata('ROLE_NAME') != 'administrator'){
+			$filters[] = "A.ID = '" . $this->session->userdata('ID') . "'";
+		}
+		$filters[] = "A.USERNAME != 'prsty'";		
+		
 		//var_dump($_POST['nama']);
 		if(isset($_POST['submit'])){
 			if (isset($_POST['username'])) {
@@ -72,7 +77,6 @@ class User extends CI_Controller {
 			}			
 		}
 		
-		$filters[] = "A.USERNAME != 'prsty'";
 		$data = $this->user_model->get($filters, $limit);
 		$total_data = count($this->user_model->get($filters));
 		$limit[] = $total_data;
@@ -182,7 +186,7 @@ class User extends CI_Controller {
 				'data'		=> (object) array (
 					'classes'  	=> 'striped bordered hover',
 					'insertable'=> false,
-					'editable'	=> false,
+					'editable'	=> true,
 					'deletable'	=> false,
 					'statusable'=> false,
 					'detailable'=> true,
@@ -652,26 +656,29 @@ class User extends CI_Controller {
 			//validation
 			$error_info = array();
 			$error_status = false;
-			if($_POST['username'] == ''){
-				$error_info[] = 'Username can not be null';
-				$error_status = true;
+			if(isset($_POST['username'])){
+				if($_POST['username'] == ''){
+					$error_info[] = 'Username can not be null';
+					$error_status = true;
+				}
+				if ( preg_match('/\s/', $_POST['username']) )	{
+					$error_info[] = 'Username can not contain whitespace';
+					$error_status = true;
+				}	
+				if(strlen ($_POST['username']) < 5){
+					$error_info[] = 'Username minimum 5 character';
+					$error_status = true;
+				}
+				$filter = array();
+				$filter[] = "A.USERNAME = '". $_POST['username']."'";
+				$filter[] = "A.id != '". $_POST['id']."'";
+				$data = $this->user_model->get($filter);			
+				if(!empty($data)){
+					$error_info[] = 'Username must be unique';
+					$error_status = true;				
+				}
 			}
-			if ( preg_match('/\s/', $_POST['username']) )	{
-				$error_info[] = 'Username can not contain whitespace';
-				$error_status = true;
-			}	
-			if(strlen ($_POST['username']) < 5){
-				$error_info[] = 'Username minimum 5 character';
-				$error_status = true;
-			}
-			$filter = array();
-			$filter[] = "A.USERNAME = '". $_POST['username']."'";
-			$filter[] = "A.id != '". $_POST['id']."'";
-			$data = $this->user_model->get($filter);			
-			if(!empty($data)){
-				$error_info[] = 'Username must be unique';
-				$error_status = true;				
-			}			
+			
 			if($_POST['password'] == ''){
 				$error_info[] = 'Password can not be null';
 				$error_status = true;
@@ -688,7 +695,7 @@ class User extends CI_Controller {
 				$error_info[] = 'Field Password and Password 2 must be the same';
 				$error_status = true;
 			}
-			if($_POST['role'] == ''){
+			if(isset($_POST['role']) AND $_POST['role'] == ''){
 				$error_info[] = 'Role can not be null';
 				$error_status = true;
 			}
@@ -702,19 +709,25 @@ class User extends CI_Controller {
 				);				
 				echo json_encode($this->data['error']);
 			}else{
-				if($_POST['status'] != '' ){
-					$this->data['update'] = array(
-							'USERNAME' => $_POST['username'],
-							'PASSWORD' => md5($_POST['password']),
-							'STATUS' => $_POST['status'],
-							'ROLE_ID' => $_POST['role'],
-						);
+				if($this->session->userdata('ROLE_NAME') == 'administrator'){
+					if(isset($_POST['status']) and $_POST['status'] != '' ){
+						$this->data['update'] = array(
+								'USERNAME' => $_POST['username'],
+								'PASSWORD' => md5($_POST['password']),
+								'STATUS' => $_POST['status'],
+								'ROLE_ID' => $_POST['role'],
+							);
+					}else{
+						$this->data['update'] = array(
+								'USERNAME' => $_POST['username'],
+								'PASSWORD' => md5($_POST['password']),
+								'ROLE_ID' => $_POST['role'],
+							);					
+					}
 				}else{
 					$this->data['update'] = array(
-							'USERNAME' => $_POST['username'],
 							'PASSWORD' => md5($_POST['password']),
-							'ROLE_ID' => $_POST['role'],
-						);					
+						);						
 				}
 				//var_dump($this->data['insert']);die;
 				$result = $this->user_model->update($this->data['update'], $_POST['id']);
@@ -784,49 +797,68 @@ class User extends CI_Controller {
 				'name' 		=> 'id',
 				'value' 	=> $r_id,
 				'classes' 	=> '',
-			);
-			$fields[] = (object) array(
-				'type' 			=> 'text',
-				'label' 		=> 'Username',
-				'placeholder' 	=> 'username',
-				'name' 			=> 'username',
-				'value' 		=> $r_username,
-				'classes' 		=> 'full-width',
-			);
-			$fields[] = (object) array(
-				'type' 			=> 'password',
-				'label' 		=> 'Password',
-				'placeholder' 	=> 'Password',
-				'name' 			=> 'password',
-				'value' 		=> $r_password,
-				'classes' 		=> '',
 			);			
-			$fields[] = (object) array(
-				'type' 			=> 'password',
-				'label' 		=> 'Password 2',
-				'placeholder' 	=> 'Password 2',
-				'name' 			=> 'password2',
-				'value' 		=> $r_password2,
-				'classes' 		=> '',
-			);			
-			$fields[] = (object) array(
-				'type' 			=> 'select',
-				'label' 		=> 'Status',
-				'placeholder' 	=> '--Select status--',
-				'name' 			=> 'status',
-				'value' 		=> $r_status,
-				'options'		=> $status,
-				'classes' 		=> '',
-			);			
-			$fields[] = (object) array(
-				'type' 			=> 'select',
-				'label' 		=> 'Role',
-				'name' 			=> 'role',
-				'placeholder'	=> '--Select Role--',
-				'value' 		=> $r_role,
-				'options'		=> $role,
-				'classes' 		=> '',
-			);	
+			if($this->session->userdata('ROLE_NAME') == 'administrator'){
+				$fields[] = (object) array(
+					'type' 			=> 'text',
+					'label' 		=> 'Username',
+					'placeholder' 	=> 'username',
+					'name' 			=> 'username',
+					'value' 		=> $r_username,
+					'classes' 		=> 'full-width',
+				);
+				$fields[] = (object) array(
+					'type' 			=> 'password',
+					'label' 		=> 'Password',
+					'placeholder' 	=> 'Password',
+					'name' 			=> 'password',
+					'value' 		=> $r_password,
+					'classes' 		=> '',
+				);			
+				$fields[] = (object) array(
+					'type' 			=> 'password',
+					'label' 		=> 'Password 2',
+					'placeholder' 	=> 'Password 2',
+					'name' 			=> 'password2',
+					'value' 		=> $r_password2,
+					'classes' 		=> '',
+				);			
+				$fields[] = (object) array(
+					'type' 			=> 'select',
+					'label' 		=> 'Status',
+					'placeholder' 	=> '--Select status--',
+					'name' 			=> 'status',
+					'value' 		=> $r_status,
+					'options'		=> $status,
+					'classes' 		=> '',
+				);			
+				$fields[] = (object) array(
+					'type' 			=> 'select',
+					'label' 		=> 'Role',
+					'name' 			=> 'role',
+					'placeholder'	=> '--Select Role--',
+					'value' 		=> $r_role,
+					'options'		=> $role,
+					'classes' 		=> '',
+				);
+			}else{
+				$fields[] = (object) array(
+					'type' 			=> 'password',
+					'label' 		=> 'Password',
+					'placeholder' 	=> 'Password',
+					'name' 			=> 'password',
+					'value' 		=> $r_password,
+					'classes' 		=> '',
+				);			
+				$fields[] = (object) array(
+					'type' 			=> 'password',
+					'label' 		=> 'Password 2',
+					'placeholder' 	=> 'Password 2',
+					'name' 			=> 'password2',
+					'value' 		=> $r_password2,
+					'classes' 		=> '',
+				);					
+			}
 
 			$this->data['update'] = (object) array (
 				'type'  	=> 'update_default',
