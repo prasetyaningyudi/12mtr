@@ -38,6 +38,7 @@ class Kppn extends CI_Controller {
 		$filters = array();
 		$limit = array('10', '0');
 		$r_nama = '';
+		$r_kode = '';
 		$r_status = '';
 
 		//var_dump($_POST['nama']);
@@ -48,6 +49,12 @@ class Kppn extends CI_Controller {
 					$r_nama = $_POST['nama'];
 				}
 			}
+			if (isset($_POST['kode'])) {
+				if ($_POST['kode'] != '' or $_POST['kode'] != null) {
+					$filters[] = "KODE = '" . $_POST['kode'] . "'";
+					$r_kode = $_POST['kode'];
+				}
+			}			
 			if (isset($_POST['status'])) {
 				if ($_POST['status'] != '' or $_POST['status'] != null) {
 					$filters[] = "STATUS = '" . $_POST['status'] . "'";
@@ -80,6 +87,7 @@ class Kppn extends CI_Controller {
 					$body[$no_body] = array(
 						(object) array( 'classes' => ' hidden ', 'value' => $value->ID ),
 						(object) array( 'classes' => ' bold align-center ', 'value' => $no_body+1 ),
+						(object) array( 'classes' => ' align-left ', 'value' => $value->KODE ),
 						(object) array( 'classes' => ' align-left ', 'value' => $value->NAMA ),
 						(object) array( 'classes' => ' align-center ', 'value' => $value->STATUS ),
 					);
@@ -95,6 +103,7 @@ class Kppn extends CI_Controller {
 		$header = array(
 			array (
 				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'No'),
+				(object) array ('colspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'kode'),								
 				(object) array ('colspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'nama'),								
 				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'status'),			
 			)		
@@ -103,12 +112,20 @@ class Kppn extends CI_Controller {
 		$fields = array();
 		$fields[] = (object) array(
 			'type' 			=> 'text',
+			'label' 		=> 'Kode',
+			'placeholder' 	=> 'kode',
+			'name' 			=> 'kode',
+			'value' 		=> $r_kode,
+			'classes' 		=> 'full-width',
+		);			
+		$fields[] = (object) array(
+			'type' 			=> 'text',
 			'label' 		=> 'Nama',
 			'placeholder' 	=> 'Nama',
 			'name' 			=> 'nama',
 			'value' 		=> $r_nama,
 			'classes' 		=> 'full-width',
-		);		
+		);			
 		$fields[] = (object) array(
 			'type' 			=> 'text',
 			'label' 		=> 'Status',
@@ -174,7 +191,10 @@ class Kppn extends CI_Controller {
 				$error_info[] = 'Nama can not be null';
 				$error_status = true;
 			}
-		
+			if($_POST['kode'] == ''){
+				$error_info[] = 'Kode can not be null';
+				$error_status = true;
+			}		
 			if($error_status == true){
 				$this->data['error'] = (object) array (
 					'type'  	=> 'error',
@@ -186,6 +206,7 @@ class Kppn extends CI_Controller {
 			}else{
 				$this->data['insert'] = array(
 					'NAMA' => $_POST['nama'],
+					'KODE' => $_POST['kode'],
 				);	
 				//var_dump($this->data['insert']);die;
 				$result = $this->kppn_model->insert($this->data['insert']);
@@ -203,13 +224,20 @@ class Kppn extends CI_Controller {
 			$fields = array();
 			$fields[] = (object) array(
 				'type' 			=> 'text',
+				'label' 		=> 'Kode',
+				'name' 			=> 'kode',
+				'placeholder'	=> 'kode',
+				'value' 		=> '',
+				'classes' 		=> 'full-width',
+			);				
+			$fields[] = (object) array(
+				'type' 			=> 'text',
 				'label' 		=> 'Nama',
 				'name' 			=> 'nama',
 				'placeholder'	=> 'nama',
 				'value' 		=> '',
 				'classes' 		=> 'full-width',
-			);	
-			
+			);				
 
 			$this->data['insert'] = (object) array (
 				'type'  	=> 'insert_default',
@@ -234,7 +262,10 @@ class Kppn extends CI_Controller {
 				$error_info[] = 'Nama can not be null';
 				$error_status = true;
 			}
-			
+			if($_POST['kode'] == ''){
+				$error_info[] = 'Kode can not be null';
+				$error_status = true;
+			}			
 			if($error_status == true){
 				$this->data['error'] = (object) array (
 					'type'  	=> 'error',
@@ -246,6 +277,7 @@ class Kppn extends CI_Controller {
 			}else{
 				$this->data['update'] = array(
 						'NAMA' => $_POST['nama'],
+						'KODE' => $_POST['kode'],
 					);				
 				$result = $this->kppn_model->update($this->data['update'], $_POST['id']);
 				if($result == true){
@@ -271,6 +303,7 @@ class Kppn extends CI_Controller {
 			}			
 		}else{
 			$r_nama = '';
+			$r_kode = '';
 			
 			$filter = array();
 			$filter[] = "ID = ". $_POST['id'];
@@ -278,6 +311,7 @@ class Kppn extends CI_Controller {
 			foreach($this->data['result'] as $value){
 				$r_id 	= $value->ID;
 				$r_nama = $value->NAMA;
+				$r_kode = $value->KODE;
 			}
 			
 			$fields = array();
@@ -287,7 +321,15 @@ class Kppn extends CI_Controller {
 				'name' 		=> 'id',
 				'value' 	=> $r_id,
 				'classes' 	=> '',
-			);				
+			);
+			$fields[] = (object) array(
+				'type' 			=> 'text',
+				'label' 		=> 'Kode',
+				'name' 			=> 'kode',
+				'placeholder'	=> 'kode',
+				'value' 		=> $r_kode,
+				'classes' 		=> 'full-width',
+			);			
 			$fields[] = (object) array(
 				'type' 			=> 'text',
 				'label' 		=> 'Nama',

@@ -97,7 +97,7 @@ class Jenis_laporan extends CI_Controller {
 			array (
 				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'No'),
 				(object) array ('colspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'nama'),								
-				(object) array ('colspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'jatuh tempo'),								
+				(object) array ('colspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'tanggal jatuh tempo'),								
 				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'status'),			
 			)		
 		);
@@ -185,6 +185,12 @@ class Jenis_laporan extends CI_Controller {
 				echo json_encode($this->data['success']);				
 			}
 		}else{
+			$opt_jatuh_tempo = array();
+			$i = 1;
+			for($i;$i<32;$i++){
+				$opt_jatuh_tempo[] = (object) array('label'=>$i, 'value'=>$i);
+			}
+			
 			$fields = array();
 			$fields[] = (object) array(
 				'type' 			=> 'text',
@@ -195,10 +201,11 @@ class Jenis_laporan extends CI_Controller {
 				'classes' 		=> 'full-width',
 			);	
 			$fields[] = (object) array(
-				'type' 			=> 'date',
+				'type' 			=> 'select',
 				'label' 		=> 'Jatuh Tempo',
 				'name' 			=> 'jatuh_tempo',
 				'placeholder'	=> 'tanggal jatuh tempo',
+				'options'		=> $opt_jatuh_tempo,
 				'value' 		=> '',
 				'classes' 		=> 'full-width',
 			);				
@@ -230,7 +237,7 @@ class Jenis_laporan extends CI_Controller {
 			if($_POST['jatuh_tempo'] == ''){
 				$error_info[] = 'Jatuh tempo can not be null';
 				$error_status = true;
-			}			
+			}		
 			
 			if($error_status == true){
 				$this->data['error'] = (object) array (
@@ -297,10 +304,11 @@ class Jenis_laporan extends CI_Controller {
 				'classes' 		=> 'full-width',
 			);
 			$fields[] = (object) array(
-				'type' 			=> 'date',
+				'type' 			=> 'select',
 				'label' 		=> 'Jatuh Tempo',
 				'name' 			=> 'jatuh_tempo',
 				'placeholder'	=> 'tanggal jatuh tempo',
+				'options'		=> $opt_jatuh_tempo,			
 				'value' 		=> $r_jatuh_tempo,
 				'classes' 		=> 'full-width',
 			);				

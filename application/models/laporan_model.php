@@ -3,14 +3,33 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Laporan_model extends CI_Model {
 	
-	private $_table1 = "jenis_laporan";
+	private $_table1 = "laporan";
+	private $_table2 = "jenis_laporan";
+	private $_table3 = "periode_laporan";
+	private $_table4 = "status_laporan";
+	private $_table5 = "seksi";
+	private $_table6 = "kppn";
+	private $_table7 = "bidang";
 
     public function __construct(){
 		parent::__construct();
     }
 
 	public function get($filters=null, $limit=null){
-		$sql = "SELECT * FROM " . $this->_table1;
+		$sql = "SELECT A.*, B.NAMA BNAMA, C.NAMA CNAMA, D.NAMA DNAMA, E.NAMA ENAMA, ";
+		$sql .= " F.NAMA FNAMA, G.NAMA GNAMA FROM " . $this->_table1 . " A ";
+		$sql .= " LEFT JOIN " . $this->_table2 . "  B ";
+		$sql .= " ON A.JENIS_LAPORAN_ID = B.ID";
+		$sql .= " LEFT JOIN " . $this->_table3 . "  C ";
+		$sql .= " ON A.PERIODE_LAPORAN_ID = C.ID";
+		$sql .= " LEFT JOIN " . $this->_table4 . "  D ";
+		$sql .= " ON A.STATUS_LAPORAN_ID = D.ID";
+		$sql .= " LEFT JOIN " . $this->_table5 . "  E ";
+		$sql .= " ON A.SEKSI_ID = E.ID";
+		$sql .= " LEFT JOIN " . $this->_table6 . "  F ";
+		$sql .= " ON A.KPPN_ID = F.ID";
+		$sql .= " LEFT JOIN " . $this->_table7 . "  G ";
+		$sql .= " ON A.BIDANG_ID = G.ID";		
 		$sql .= " WHERE 1=1";
 		if(isset($filters) and $filters != null){
 			foreach ($filters as $filter) {

@@ -470,11 +470,28 @@ function generate_form(from_filter){
 	for(i=0;i<field_data.length;i++){
 		if(field_data[i].type == 'hidden'){
 			html += set_field_form(field_data[i]);
+		}else if(field_data[i].type == 'label'){
+			if(field_data[i].classes.includes("full-width") == true){
+				html += '<div class="form-group col-md-12 col-sm-12 col-xs-12">';
+			}else{
+				html += '<div class="form-group col-md-6 col-sm-6 col-xs-12">';
+			}
+			html += '<label><h5>'+field_data[i].label+'<h5></label>';
+			html += '<hr style="margin-bottom: 0px !important">';
+			html += '</div>';			
+		}else if(field_data[i].type == 'separation'){
+			if(field_data[i].classes.includes("full-width") == true){
+				html += '<div class="col-md-12 col-sm-12 col-xs-12">';
+			}else{
+				html += '<div class="col-md-6 col-sm-6 col-xs-12">';
+			}
+			html += '<hr>';
+			html += '</div>';			
 		}else{
 			if(field_data[i].classes.includes("full-width") == true){
 				html += '<div class="form-group '+hidding_field(field_data[i].classes)+' col-md-12 col-sm-12 col-xs-12">';
 			}else{
-				html += '<div class="form-group col-md-6 col-sm-6 col-xs-12">';
+				html += '<div class="form-group '+hidding_field(field_data[i].classes)+' col-md-6 col-sm-6 col-xs-12">';
 			}
 			html += '<label>'+field_data[i].label+'</label>';
 			html += set_field_form(field_data[i]);

@@ -569,15 +569,26 @@ class Menu extends CI_Controller {
 				}
 				//var_dump($this->data['insert']);die;
 				$result = $this->menu_model->insert($this->data['insert']);
-				$info = array();
-				$info[] = 'Insert data success';
-				$this->data['success'] = (object) array (
-					'type'  	=> 'success',
-					'data'		=> (object) array (
-						'info'	=> $info,
-					)
-				);			
-				echo json_encode($this->data['success']);				
+				if($result == true){
+					$info = array();
+					$info[] = 'Insert data successfully';						
+					$this->data['info'] = (object) array (
+						'type'  	=> 'success',
+						'data'		=> (object) array (
+							'info'	=> $info,
+						)
+					);
+				}else{
+					$info = array();
+					$info[] = 'Insert data not successfull';
+					$this->data['info'] = (object) array (
+						'type'  	=> 'error',
+						'data'		=> (object) array (
+							'info'	=> $info,
+						)
+					);
+				}				
+				echo json_encode($this->data['info']);				
 			}
 		}else{
 			$parent = array();
