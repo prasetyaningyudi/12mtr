@@ -3,6 +3,7 @@ var targeturl;
 var fromfilter;
 var globallimit;
 var globalform;
+var field_data;
 
 function initiation(url){
 	targeturl = url;
@@ -471,7 +472,7 @@ function generate_form(from_filter){
 			html += set_field_form(field_data[i]);
 		}else{
 			if(field_data[i].classes.includes("full-width") == true){
-				html += '<div class="form-group col-md-12 col-sm-12 col-xs-12">';
+				html += '<div class="form-group '+hidding_field(field_data[i].classes)+' col-md-12 col-sm-12 col-xs-12">';
 			}else{
 				html += '<div class="form-group col-md-6 col-sm-6 col-xs-12">';
 			}
@@ -489,11 +490,11 @@ function set_field_form(data){
 	var html = '';
 	if(data.type == 'text'){
 		html += '<input type="text" name="'+data.name+'" id="'+data.name+'" value="'+data.value+'" class="form-control" placeholder="'+data.placeholder+'" ';					
-		html += field_classes(data.classes);
+		html += field_classes(data.classes, data.name);
 		html += '>';
 	}else if(data.type == 'email'){
 		html += '<input type="email" name="'+data.name+'" id="'+data.name+'" value="'+data.value+'" class="form-control" placeholder="'+data.placeholder+'" ';					
-		html += field_classes(data.classes);
+		html += field_classes(data.classes, data.name);
 		html += '>';
 	}else if(data.type == 'password'){
 		html += '<input type="password" name="'+data.name+'" id="'+data.name+'" value="'+data.value+'" class="form-control" placeholder="'+data.placeholder+'" ';					
@@ -501,7 +502,7 @@ function set_field_form(data){
 		html += '>';
 	}else if(data.type == 'date'){
 		html += '<input type="date" name="'+data.name+'" id="'+data.name+'" value="'+data.value+'" class="form-control" placeholder="'+data.placeholder+'" ';					
-		html += field_classes(data.classes);
+		html += field_classes(data.classes, data.name);
 		html += '>';
 	}else if(data.type == 'textarea'){
 		html += '<textarea name="'+data.name+'" id="'+data.name+'" class="form-control" rows="4" placeholder="'+data.placeholder+'" ';					
@@ -558,7 +559,7 @@ function set_field_form(data){
 		}
 	}else if(data.type == 'file'){
 		html += '<input type="file" name="'+data.name+'" id="'+data.name+'" value="'+data.value+'" class="form-control" placeholder="'+data.placeholder+'" ';					
-		html += field_classes(data.classes);
+		html += field_classes(data.classes, data.name);
 		html += '>';
 	}else if(data.type == 'info'){
 		html += '<div class="">'+data.value+'</div>';
@@ -566,10 +567,11 @@ function set_field_form(data){
 	return html;
 }
 
-function field_classes(value){
+function field_classes(value, name){
 	var required = '';
 	var readonly = '';
 	var disabled = '';
+	
 	if(value.includes("required") == true){
 		required = 'required';
 	}
@@ -579,8 +581,46 @@ function field_classes(value){
 	if(value.includes("disabled") == true){
 		disabled = 'disabled';
 	}
+	if(value.includes("active-when-") == true){
+		$('[name="'+name+'"]').addClass('hidding');
+		console.log('true');
+		var array_split = value.split(" ");
+		array_split.forEach(function(item) {
+			if(item.includes("active-when-")){
+				var i;
+				var item_split = item.substr(12).split('-');
+				for(i=0;i<field_data.length;i++){
+					if(field_data[i].name == item_split[0]){
+						console.log(field_data[i].name);
+						change_select(item_split, name);
+					}
+				}
+			}
+		});
+	}
 	
 	return (required + ' ' + readonly + ' ' + disabled);
+}
+
+function hidding_field(value){
+	if(value.includes("active-when-") == true){
+		return 'hidding';
+	}else{
+		return '';
+	}
+}
+
+function change_select(split, name){
+	$(document).on('change', '[name="'+split[0]+'"]', function() {
+		if($(this).val() == split[1]){
+			console.log('sama');
+			$('[name="'+name+'"]').parent().removeClass('hidding');
+			$('[name="'+name+'"]').parent().addClass('displayed');
+		}else{
+			$('[name="'+name+'"]').parent().removeClass('displayed');
+			$('[name="'+name+'"]').parent().addClass('hidding');
+		}
+	});
 }
 
 function hide_toolbar(){

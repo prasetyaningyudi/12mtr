@@ -198,6 +198,11 @@ class Laporan extends CI_Controller {
 				echo json_encode($this->data['success']);				
 			}
 		}else{
+			$opt_sumber = array();
+			$opt_sumber[] = (object) array('label'=>'upload', 'value'=>'upload');
+			$opt_sumber[] = (object) array('label'=>'gdrive', 'value'=>'gdrive');
+			//$data = $this->laporan_model->get($filters, $limit);			
+			
 			$fields = array();
 			$fields[] = (object) array(
 				'type' 			=> 'text',
@@ -208,14 +213,46 @@ class Laporan extends CI_Controller {
 				'classes' 		=> 'full-width',
 			);	
 			$fields[] = (object) array(
-				'type' 			=> 'date',
-				'label' 		=> 'Jatuh Tempo',
-				'name' 			=> 'jatuh_tempo',
-				'placeholder'	=> 'tanggal jatuh tempo',
+				'type' 			=> 'text',
+				'label' 		=> 'Nomor',
+				'name' 			=> 'nomor',
+				'placeholder'	=> 'nomor',
 				'value' 		=> '',
+				'classes' 		=> '',
+			);			
+			$fields[] = (object) array(
+				'type' 			=> 'date',
+				'label' 		=> 'Tanggal',
+				'name' 			=> 'tanggal',
+				'placeholder'	=> 'tanggal',
+				'value' 		=> '',
+				'classes' 		=> '',
+			);	
+			$fields[] = (object) array(
+				'type' 			=> 'select',
+				'label' 		=> 'Sumber',
+				'name' 			=> 'sumber',
+				'placeholder'	=> '-- Pilih Sumber --',
+				'options' 		=> $opt_sumber,
+				'value' 		=> '',				
 				'classes' 		=> 'full-width',
 			);				
-			
+			$fields[] = (object) array(
+				'type' 			=> 'file',
+				'label' 		=> 'File',
+				'name' 			=> 'file',
+				'placeholder'	=> 'file',
+				'value' 		=> '',
+				'classes' 		=> 'active-when-sumber-upload full-width',
+			);
+			$fields[] = (object) array(
+				'type' 			=> 'text',
+				'label' 		=> 'Link Gdrive',
+				'name' 			=> 'link',
+				'placeholder'	=> 'link',
+				'value' 		=> '',
+				'classes' 		=> 'active-when-sumber-gdrive required full-width',
+			);				
 
 			$this->data['insert'] = (object) array (
 				'type'  	=> 'insert_default',

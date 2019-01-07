@@ -118,3 +118,9 @@ pre{
 	font-weight: bold;
 }
 .align-middle{vertical-align:middle!important}
+.hidding{
+	display: none;
+}
+.displayed{
+	display: block;
+}
