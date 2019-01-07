@@ -24,8 +24,12 @@ class User extends CI_Controller {
 	public function index(){
 		if($this->auth->get_permission($this->session->userdata('ROLE_NAME'), __CLASS__ , __FUNCTION__ ) == false){
 			redirect ('authentication/unauthorized');
-		}		
-		$this->data['subtitle'] = 'List';
+		}
+		if($this->session->userdata('ROLE_NAME') == 'administrator'){
+			$this->data['subtitle'] = 'List';
+		}else{
+			$this->data['subtitle'] = 'Profile';
+		}
 		$this->data['class'] = __CLASS__;
 		$this->load->view('section_header', $this->data);
 		$this->load->view('section_sidebar');
