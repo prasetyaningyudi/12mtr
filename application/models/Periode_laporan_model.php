@@ -17,7 +17,7 @@ class Periode_laporan_model extends CI_Model {
 				$sql .= " AND " . $filter;
 			}
 		}
-		$sql .= " ORDER BY NAMA ASC";
+		$sql .= " ORDER BY ID ASC";
 		if(isset($limit) and $limit != null){
 			$sql .= " LIMIT ".$limit[0]." OFFSET ".$limit[1];
 		}

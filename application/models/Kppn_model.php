@@ -17,7 +17,7 @@ class Kppn_model extends CI_Model {
 				$sql .= " AND " . $filter;
 			}
 		}
-		$sql .= " ORDER BY NAMA ASC";
+		$sql .= " ORDER BY KODE ASC";
 		if(isset($limit) and $limit != null){
 			$sql .= " LIMIT ".$limit[0]." OFFSET ".$limit[1];
 		}

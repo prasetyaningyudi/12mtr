@@ -101,7 +101,7 @@ class User extends CI_Controller {
 						(object) array( 'classes' => ' align-left ', 'value' => $value->USERNAME ),
 						(object) array( 'classes' => ' align-center ', 'value' => $value->STATUS ),
 						(object) array( 'classes' => ' align-center ', 'value' => $value->ROLE_NAME ),
-						(object) array( 'classes' => ' align-center ', 'value' => '<a href="javascript:void(0)" title="edit" onclick="show_modal(\'user/m_form_user_info/'.$value->ID.'/\')"><i style="font-size: 16px;" class="fas fa-user-edit"></i></a></a>' ),
+						(object) array( 'classes' => ' align-center ', 'value' => '<a href="javascript:void(0)" title="edit" onclick="show_modal(\'user/m_form_user_info/'.$value->ID.'/\')"><i style="font-size: 16px;" class="fas fa-user-edit"></i></a>' ),
 						(object) array( 'classes' => ' align-center ', 'value' => '<a href="javascript:void(0)" title="info" onclick="show_modal(\'user/m_user_info/'.$value->ID.'/\')">
 						<i style="font-size: 16px;" class="fas fa-user-tag"></i></a>' ),
 					);
