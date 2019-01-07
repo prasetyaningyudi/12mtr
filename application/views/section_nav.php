@@ -18,7 +18,7 @@
                   </a>
                   <ul class="dropdown-menu dropdown-usermenu pull-right">
 				    <li><a href="javascript:;">Login as <?php echo $this->session->ROLE_NAME; ?></a></li>
-                    <li><a href="<?php echo base_url().'user/profile'; ?>"> Profile</a></li>
+                    <li><a href="<?php echo base_url().'user/'; ?>"> Profile</a></li>
                     <!-- <li>
                       <a href="javascript:;">
                         <span class="badge bg-red pull-right">50%</span>
