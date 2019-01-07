@@ -15,7 +15,7 @@ $roles = array(
 				'jenis_laporan' => array ('index', 'list', 'insert', 'update', 'update_status', 'delete', 'detail'),				
 				'periode_laporan' => array ('index', 'list', 'insert', 'update', 'update_status', 'delete', 'detail'),				
 				'status_laporan' => array ('index', 'list', 'insert', 'update', 'update_status', 'delete', 'detail'),				
-				'laporan' => array ('index', 'list', 'insert', 'update', 'update_status', 'delete', 'detail'),				
+				'laporan' => array ('index', 'list', 'insert', 'update', 'delete', 'detail'),				
 			),
 			'supervisor' => array (
 				'user' => array ('index', 'list', 'insert', 'update', 'update_status', 'delete', 'detail', 'm_form_user_info', 'insert_user_info', 'm_user_info'),		

@@ -139,7 +139,6 @@ class Laporan extends CI_Controller {
 						(object) array( 'classes' => ' align-left ', 'value' => $value->ENAMA ),
 						(object) array( 'classes' => ' align-left ', 'value' => $value->FNAMA ),
 						(object) array( 'classes' => ' align-left ', 'value' => $value->GNAMA ),
-						(object) array( 'classes' => ' align-left ', 'value' => $value->CATATAN ),
 					);
 					$no_body++;
 				}
@@ -156,8 +155,7 @@ class Laporan extends CI_Controller {
 				(object) array ('colspan' => 5, 'classes' => 'bold align-center capitalize', 'value' => 'detail laporan'),								
 				(object) array ('colspan' => 3, 'classes' => 'bold align-center capitalize', 'value' => 'keterangan laporan'),								
 				(object) array ('colspan' => 2, 'classes' => 'bold align-center capitalize', 'value' => 'dari'),			
-				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'kepada'),	
-				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'kolom'),	
+				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'kepada'),		
 			),
 			array (
 				(object) array ('colspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'nama'),								
@@ -170,8 +168,7 @@ class Laporan extends CI_Controller {
 				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'status'),			
 				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'seksi'),			
 				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'kppn'),			
-				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'bidang'),		
-				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'catatan'),		
+				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'bidang'),			
 			)			
 		);
 			
@@ -719,7 +716,7 @@ class Laporan extends CI_Controller {
 		}		
 		if(isset($_POST['id']) and $_POST['id'] != null){
 			$filters = array();
-			$filters[] = "ID = ". $_POST['id'];
+			$filters[] = "A.ID = ". $_POST['id'];
 			$data = $this->laporan_model->get($filters);
 			
 			$body= array();			
@@ -734,12 +731,48 @@ class Laporan extends CI_Controller {
 						(object) array( 'classes' => ' align-left ', 'value' => $value->NAMA ),
 					);
 					$body[] = array(
-						(object) array( 'classes' => ' bold align-left ', 'value' => 'Jatuh Tempo' ),
-						(object) array( 'classes' => ' align-left ', 'value' => $value->JATUH_TEMPO ),
+						(object) array( 'classes' => ' bold align-left ', 'value' => 'Nomor' ),
+						(object) array( 'classes' => ' align-left ', 'value' => $value->NOMOR ),
 					);					
 					$body[] = array(
-						(object) array( 'classes' => ' bold align-left ', 'value' => 'Status' ),
-						(object) array( 'classes' => ' align-left ', 'value' => $value->STATUS ),
+						(object) array( 'classes' => ' bold align-left ', 'value' => 'Tanggal' ),
+						(object) array( 'classes' => ' align-left ', 'value' => $value->TANGGAL ),
+					);
+					$body[] = array(
+						(object) array( 'classes' => ' bold align-left ', 'value' => 'Sumber' ),
+						(object) array( 'classes' => ' align-left ', 'value' => $value->SUMBER ),
+					);
+					$body[] = array(
+						(object) array( 'classes' => ' bold align-left ', 'value' => 'File' ),
+						(object) array( 'classes' => ' align-left ', 'value' => '<a href="'.$value->FILE.'" target="_blank" title="view"><i style="font-size: 16px;" class="far fa-eye"></i></a>' ),
+					);
+					$body[] = array(
+						(object) array( 'classes' => ' bold align-left ', 'value' => 'Jenis Laporan' ),
+						(object) array( 'classes' => ' align-left ', 'value' => $value->BNAMA ),
+					);
+					$body[] = array(
+						(object) array( 'classes' => ' bold align-left ', 'value' => 'Periode Laporan' ),
+						(object) array( 'classes' => ' align-left ', 'value' => $value->CNAMA ),
+					);
+					$body[] = array(
+						(object) array( 'classes' => ' bold align-left ', 'value' => 'Status Laporan' ),
+						(object) array( 'classes' => ' align-left ', 'value' => $value->DNAMA ),
+					);
+					$body[] = array(
+						(object) array( 'classes' => ' bold align-left ', 'value' => 'Dari Seksi' ),
+						(object) array( 'classes' => ' align-left ', 'value' => $value->ENAMA ),
+					);
+					$body[] = array(
+						(object) array( 'classes' => ' bold align-left ', 'value' => 'KPPN' ),
+						(object) array( 'classes' => ' align-left ', 'value' => $value->FNAMA ),
+					);
+					$body[] = array(
+						(object) array( 'classes' => ' bold align-left ', 'value' => 'Ke Bidang' ),
+						(object) array( 'classes' => ' align-left ', 'value' => $value->GNAMA ),
+					);
+					$body[] = array(
+						(object) array( 'classes' => ' bold align-left ', 'value' => 'Catatan' ),
+						(object) array( 'classes' => ' align-left ', 'value' => $value->CATATAN ),
 					);
 				}
 			}
