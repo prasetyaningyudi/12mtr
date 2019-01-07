@@ -167,7 +167,20 @@
             <div class="col-md-12 col-sm-12 col-xs-12">
               <div class="x_panel">
                 <div class="x_title">
-                  <h4>List <?php if(isset($title)){	echo ucwords(strtolower($title));}?></h4>
+                  <h4>		
+					<?php 
+						if(isset($subtitle)){
+							echo ucwords(strtolower($subtitle)).' ';
+						}else{
+							echo '';
+						} 
+						if(isset($title)){
+							echo ucwords(strtolower($title));
+						}else{
+							echo 'Untitled';
+						}
+					?>		
+				</h4>
                   <!--<ul class="nav navbar-right panel_toolbox">
                     <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                     </li>
