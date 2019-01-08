@@ -13,7 +13,9 @@ class Role extends CI_Controller {
 		$this->load->model('role_model');
 		$this->load->model('menu_model');
 		$this->data['menu'] = $this->menu_model->get_menu($this->session->userdata('ROLE_ID'));
-		$this->data['sub_menu'] = $this->menu_model->get_sub_menu($this->session->userdata('ROLE_ID'));				
+		$this->data['sub_menu'] = $this->menu_model->get_sub_menu($this->session->userdata('ROLE_ID'));	
+		$this->load->model('app_data_model');		
+		$this->data['app_data'] = $this->app_data_model->get();			
 		$this->data['error'] = array();
 		$this->data['title'] = 'Role';
 		//var_dump($this->data['menu']);
