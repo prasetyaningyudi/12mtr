@@ -101,8 +101,8 @@ class User extends CI_Controller {
 						(object) array( 'classes' => ' align-left ', 'value' => $value->USERNAME ),
 						(object) array( 'classes' => ' align-center ', 'value' => $value->STATUS ),
 						(object) array( 'classes' => ' align-center ', 'value' => $value->ROLE_NAME ),
-						(object) array( 'classes' => ' align-center ', 'value' => '<a href="javascript:void(0)" title="edit" onclick="show_modal(\'user/m_form_user_info/'.$value->ID.'/\')"><i style="font-size: 16px;" class="fas fa-user-edit"></i></a>' ),
-						(object) array( 'classes' => ' align-center ', 'value' => '<a href="javascript:void(0)" title="info" onclick="show_modal(\'user/m_user_info/'.$value->ID.'/\')">
+						(object) array( 'classes' => ' align-center ', 'value' => '<a href="javascript:void(0)" title="edit" onclick="show_modal(\''.base_url().'user/m_form_user_info/'.$value->ID.'/\')"><i style="font-size: 16px;" class="fas fa-user-edit"></i></a>' ),
+						(object) array( 'classes' => ' align-center ', 'value' => '<a href="javascript:void(0)" title="info" onclick="show_modal(\''.base_url().'user/m_user_info/'.$value->ID.'/\')">
 						<i style="font-size: 16px;" class="fas fa-user-tag"></i></a>' ),
 					);
 					$no_body++;				
@@ -153,7 +153,7 @@ class User extends CI_Controller {
 			'name' 			=> 'status',
 			'value' 		=> $r_status,
 			'classes' 		=> 'full-width',
-		);			
+		);
 		$fields[] = (object) array(
 			'type' 			=> 'select',
 			'label' 		=> 'Role',
@@ -197,7 +197,7 @@ class User extends CI_Controller {
 					'pdf'		=> false,
 					'xls'		=> false,
 					'pagination'=> $limit,
-					'filters'  	=> $fields,
+					'filters'  	=> null,
 					'toolbars'	=> null,
 					'header'  	=> $header,
 					'body'  	=> $body,
@@ -510,8 +510,8 @@ class User extends CI_Controller {
 				$error_info[] = 'Username can not contain whitespace';
 				$error_status = true;
 			}	
-			if(strlen ($_POST['username']) < 5){
-				$error_info[] = 'Username minimum 5 character';
+			if(strlen ($_POST['username']) < 3){
+				$error_info[] = 'Username minimum 3 character';
 				$error_status = true;
 			}		
 
@@ -669,8 +669,8 @@ class User extends CI_Controller {
 					$error_info[] = 'Username can not contain whitespace';
 					$error_status = true;
 				}	
-				if(strlen ($_POST['username']) < 5){
-					$error_info[] = 'Username minimum 5 character';
+				if(strlen ($_POST['username']) < 3){
+					$error_info[] = 'Username minimum 3 character';
 					$error_status = true;
 				}
 				$filter = array();

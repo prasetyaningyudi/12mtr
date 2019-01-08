@@ -364,7 +364,6 @@ function onclik_submit(){
 	$('.for_modal #button-submit').on('click',function(e){
 		//e.preventDefault();
 		var datainput = generate_form_data("#form-"+the_data.data.id);
-		console.log(datainput);
 		
 		$.ajax({
 			type : "POST",
@@ -374,11 +373,21 @@ function onclik_submit(){
 			contentType: false,
 			processData: false,
 			success: function(data){
+				var reload = false;
+				if (typeof the_data.data.reload == "undefined" || the_data.data.reload == null){
+					reload = false;
+				}else{
+					if(the_data.data.reload == true){
+						reload = true;
+					}
+				}				
 				$('#'+the_data.data.id).modal('hide');
-				//console.log(data);
 				from_filter(false);
 				get_data(JSON.parse(data));
-				$("#form-"+the_data.data.id).trigger("reset");	
+				$("#form-"+the_data.data.id).trigger("reset");
+				if(reload == true){
+					initiation(targeturl);
+				}
 			}
 		});
 
@@ -533,7 +542,10 @@ function set_field_form(data){
 		html += '<select name="'+data.name+'" id="'+data.name+'" class="form-control custom-select" ';	
 		html += field_classes(data.classes);
 		html += '>';
-		html += '<option value="">'+data.placeholder+'</option>';
+		if(data.placeholder == ''){
+		}else{
+			html += '<option value="">'+data.placeholder+'</option>';
+		}
 		var i;
 		for(i=0;i<data.options.length;i++){
 			//console.log(data.value);

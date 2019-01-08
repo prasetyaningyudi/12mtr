@@ -17,7 +17,7 @@ class Laporan_model extends CI_Model {
 
 	public function get($filters=null, $limit=null){
 		$sql = "SELECT A.*, B.NAMA BNAMA, C.NAMA CNAMA, D.NAMA DNAMA, E.NAMA ENAMA, ";
-		$sql .= " F.NAMA FNAMA, G.NAMA GNAMA FROM " . $this->_table1 . " A ";
+		$sql .= " F.KODE KODE_KPPN, F.NAMA FNAMA, G.NAMA GNAMA FROM " . $this->_table1 . " A ";
 		$sql .= " LEFT JOIN " . $this->_table2 . "  B ";
 		$sql .= " ON A.JENIS_LAPORAN_ID = B.ID";
 		$sql .= " LEFT JOIN " . $this->_table3 . "  C ";
@@ -40,7 +40,7 @@ class Laporan_model extends CI_Model {
 		if(isset($limit) and $limit != null){
 			$sql .= " LIMIT ".$limit[0]." OFFSET ".$limit[1];
 		}
-		
+		//var_dump($sql);
 		$query = $this->db->query($sql);
 		$result = $query->result();
 		return $result;

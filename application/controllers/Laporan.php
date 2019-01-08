@@ -51,7 +51,11 @@ class Laporan extends CI_Controller {
 		$r_seksi = '';
 		$r_kppn = '';
 		$r_bidang = '';
-
+		
+		if ($this->session->userdata('ROLE_NAME') == 'kppn'){
+			$filters[] = "F.KODE = '" . $this->session->userdata('USERNAME') . "'";
+		}
+		
 		//var_dump($_POST['nama']);
 		if(isset($_POST['submit'])){
 			if (isset($_POST['nama'])) {
@@ -125,21 +129,38 @@ class Laporan extends CI_Controller {
                 );
 			} else {
 				foreach ($data as $value) {
-					$body[$no_body] = array(
-						(object) array( 'classes' => ' hidden ', 'value' => $value->ID ),
-						(object) array( 'classes' => ' bold align-center ', 'value' => $no_body+1 ),
-						(object) array( 'classes' => ' align-left ', 'value' => $value->NAMA ),
-						//(object) array( 'classes' => ' align-left ', 'value' => $value->NOMOR ),
-						//(object) array( 'classes' => ' align-center ', 'value' => $value->TANGGAL ),
-						(object) array( 'classes' => ' align-center ', 'value' => $value->SUMBER ),
-						(object) array( 'classes' => ' align-center ', 'value' => '<a href="'.$value->FILE.'" target="_blank" title="view"><i style="font-size: 16px;" class="far fa-eye"></i></a>' ),
-						(object) array( 'classes' => ' align-left ', 'value' => $value->BNAMA ),
-						(object) array( 'classes' => ' align-left ', 'value' => $value->CNAMA ),
-						(object) array( 'classes' => ' align-left ', 'value' => $value->DNAMA ),
-						(object) array( 'classes' => ' align-left ', 'value' => $value->ENAMA ),
-						(object) array( 'classes' => ' align-left ', 'value' => $value->FNAMA ),
-						(object) array( 'classes' => ' align-left ', 'value' => $value->GNAMA ),
-					);
+					if ($this->session->userdata('ROLE_NAME') == 'kanwil'){
+						$edit_status = (object) array( 'classes' => ' align-center ', 'value' => '<a href="javascript:void(0)" title="edit status" onclick="show_modal(\'laporan/m_form_edit_status/'.$value->ID.'/\')"><i style="font-size: 16px;" class="fas fa-pen-alt"></i></a>' );
+						
+						$body[$no_body] = array(
+							(object) array( 'classes' => ' hidden ', 'value' => $value->ID ),
+							(object) array( 'classes' => ' bold align-center ', 'value' => $no_body+1 ),
+							(object) array( 'classes' => ' align-left ', 'value' => $value->NAMA ),
+							(object) array( 'classes' => ' align-center ', 'value' => $value->SUMBER ),
+							(object) array( 'classes' => ' align-center ', 'value' => '<a href="'.$value->FILE.'" target="_blank" title="view"><i style="font-size: 16px;" class="far fa-eye"></i></a>' ),
+							(object) array( 'classes' => ' align-left ', 'value' => $value->BNAMA ),
+							(object) array( 'classes' => ' align-left ', 'value' => $value->CNAMA ),
+							(object) array( 'classes' => ' align-left ', 'value' => $value->DNAMA ),
+							(object) array( 'classes' => ' align-left ', 'value' => $value->ENAMA ),
+							(object) array( 'classes' => ' align-left ', 'value' => $value->FNAMA ),
+							(object) array( 'classes' => ' align-left ', 'value' => $value->GNAMA ),
+							$edit_status
+						);						
+					}else{
+						$body[$no_body] = array(
+							(object) array( 'classes' => ' hidden ', 'value' => $value->ID ),
+							(object) array( 'classes' => ' bold align-center ', 'value' => $no_body+1 ),
+							(object) array( 'classes' => ' align-left ', 'value' => $value->NAMA ),
+							(object) array( 'classes' => ' align-center ', 'value' => $value->SUMBER ),
+							(object) array( 'classes' => ' align-center ', 'value' => '<a href="'.$value->FILE.'" target="_blank" title="view"><i style="font-size: 16px;" class="far fa-eye"></i></a>' ),
+							(object) array( 'classes' => ' align-left ', 'value' => $value->BNAMA ),
+							(object) array( 'classes' => ' align-left ', 'value' => $value->CNAMA ),
+							(object) array( 'classes' => ' align-left ', 'value' => $value->DNAMA ),
+							(object) array( 'classes' => ' align-left ', 'value' => $value->ENAMA ),
+							(object) array( 'classes' => ' align-left ', 'value' => $value->FNAMA ),
+							(object) array( 'classes' => ' align-left ', 'value' => $value->GNAMA ),
+						);						
+					}
 					$no_body++;
 				}
 			}
@@ -193,7 +214,7 @@ class Laporan extends CI_Controller {
 		$opt_seksi = $this->get_option_data($this->seksi_model, $filters);
 
 		$filters = array();
-		$filters[] = "STATUS = '1'";			
+		$filters[] = "STATUS = '1'";
 		$opt_kppn = $this->get_option_data($this->kppn_model, $filters);
 
 		$filters = array();
@@ -253,16 +274,18 @@ class Laporan extends CI_Controller {
 			'options' 		=> $opt_seksi,
 			'value' 		=> $r_seksi,				
 			'classes' 		=> 'full-width',
-		);			
-		$fields[] = (object) array(
-			'type' 			=> 'select',
-			'label' 		=> 'KPPN',
-			'name' 			=> 'kppn',
-			'placeholder'	=> '-- Pilih KPPN --',
-			'options' 		=> $opt_kppn,
-			'value' 		=> $r_kppn,				
-			'classes' 		=> 'full-width',
-		);					
+		);
+		if ($this->session->userdata('ROLE_NAME') != 'kppn'){
+			$fields[] = (object) array(
+				'type' 			=> 'select',
+				'label' 		=> 'KPPN',
+				'name' 			=> 'kppn',
+				'placeholder'	=> '-- Pilih KPPN --',
+				'options' 		=> $opt_kppn,
+				'value' 		=> $r_kppn,				
+				'classes' 		=> 'full-width',
+			);
+		}
 		$fields[] = (object) array(
 			'type' 			=> 'select',
 			'label' 		=> 'Ke Bidang',
@@ -273,13 +296,29 @@ class Laporan extends CI_Controller {
 			'classes' 		=> 'full-width',
 		);
 
+		if ($this->session->userdata('ROLE_NAME') == 'kppn'){
+			$deletable = false;
+			$insertable = true;
+			$editable = true;
+		}else if($this->session->userdata('ROLE_NAME') == 'kanwil'){
+			$deletable = false;
+			$insertable = false;
+			$editable = false;
+		}else{
+			$deletable = true;
+			$insertable = true;
+			$editable = true;
+		}
+		
+		//var_dump($body);
+		
 		$this->data['list'] = (object) array (
 			'type'  	=> 'table_default',
 			'data'		=> (object) array (
 				'classes'  	=> 'striped bordered hover',
-				'insertable'=> true,
-				'editable'	=> true,
-				'deletable'	=> true,
+				'insertable'=> $insertable,
+				'editable'	=> $editable,
+				'deletable'	=> $deletable,
 				'statusable'=> false,
 				'detailable'=> true,
 				'pdf'		=> false,
@@ -293,6 +332,117 @@ class Laporan extends CI_Controller {
 			)
 		);		
 		echo json_encode($this->data['list']);
+	}
+	
+	public function m_form_edit_status($laporan_id = null){
+		if($this->auth->get_permission($this->session->userdata('ROLE_NAME'), __CLASS__ , __FUNCTION__ ) == false){
+			redirect ('authentication/unauthorized');
+		}		
+		if($laporan_id != null){
+			$r_id = '';
+			$r_status_laporan = '';
+			$r_catatan = '';
+			
+			$filter = array();
+			$filter[] = "A.ID = ". $laporan_id;
+			$this->data['result'] = $this->laporan_model->get($filter);
+			foreach($this->data['result'] as $value){
+				$r_id 	= $value->ID;
+				$r_status_laporan = $value->STATUS_LAPORAN_ID;
+				$r_catatan = $value->CATATAN;
+			}
+
+			$filters = array();
+			$filters[] = "STATUS = '1'";
+			$opt_status = $this->get_option_data($this->status_laporan_model, $filters);
+			
+			$fields = array();
+			$fields[] = (object) array(
+				'type' 		=> 'hidden',
+				'label' 	=> 'id',
+				'name' 		=> 'id',
+				'value' 	=> $r_id,
+				'classes' 	=> '',
+			);				
+			$fields[] = (object) array(
+				'type' 			=> 'select',
+				'label' 		=> 'Status Laporan',
+				'name' 			=> 'status_laporan',
+				'placeholder'	=> '-- Pilih Status --',
+				'options' 		=> $opt_status,
+				'value' 		=> $r_status_laporan,				
+				'classes' 		=> 'full-width',
+			);			
+			$fields[] = (object) array(
+				'type' 			=> 'textarea',
+				'label' 		=> 'Catatan',
+				'name' 			=> 'catatan',
+				'placeholder'	=> 'catatan',
+				'value' 		=> $r_catatan,
+				'classes' 		=> 'full-width',
+			);					
+			
+			$this->data['output'] = (object) array (
+				'type'  	=> 'modal_form',
+				'data'		=> (object) array (
+					'target'	=> site_url( __CLASS__ ).'/edit_status',
+					'reload'	=> true,
+					'title'		=> 'User Information',
+					'id'		=> 'modal-form-1',
+					'fields'  	=> $fields,
+					
+				)
+			);	
+			echo json_encode($this->data['output']);
+		}
+	}
+	
+	public function edit_status(){
+		if($this->auth->get_permission($this->session->userdata('ROLE_NAME'), __CLASS__ , __FUNCTION__ ) == false){
+			redirect ('authentication/unauthorized');
+		}
+		$error_info = array();
+		$error_status = false;		
+		if($_POST['status_laporan'] == ''){
+			$error_info[] = 'status laporan can not be null';
+			$error_status = true;
+		}
+		
+		if($error_status == true){
+			$this->data['error'] = (object) array (
+				'type'  	=> 'error',
+				'data'		=> (object) array (
+					'info'	=> $error_info,
+				)
+			);				
+			echo json_encode($this->data['error']);
+		}else{
+			$this->data['update'] = array(
+				'STATUS_LAPORAN_ID' => $_POST['status_laporan'],
+				'CATATAN' => $_POST['catatan']
+			);
+			$result = $this->laporan_model->update($this->data['update'], $_POST['id']);
+			if($result == true){
+				$info = array();
+				$info[] = 'Update data successfully';						
+				$this->data['info'] = (object) array (
+					'type'  	=> 'success',
+					'data'		=> (object) array (
+						'info'	=> $info,
+					)
+				);
+			}else{
+				$info = array();
+				$info[] = 'Update data not successfull';
+				$this->data['info'] = (object) array (
+					'type'  	=> 'error',
+					'data'		=> (object) array (
+						'info'	=> $info,
+					)
+				);
+			}				
+			echo json_encode($this->data['info']);			
+		}
 	}
 	
 	public function insert(){
@@ -447,6 +597,9 @@ class Laporan extends CI_Controller {
 
 			$filters = array();
 			$filters[] = "STATUS = '1'";
+			if ($this->session->userdata('ROLE_NAME') == 'kppn'){
+				$filters[] = "ID = '1'";
+			}
 			$opt_status = $this->get_option_data($this->status_laporan_model, $filters);
 
 			$filters = array();
@@ -454,7 +607,10 @@ class Laporan extends CI_Controller {
 			$opt_seksi = $this->get_option_data($this->seksi_model, $filters);
 
 			$filters = array();
-			$filters[] = "STATUS = '1'";			
+			$filters[] = "STATUS = '1'";
+			if ($this->session->userdata('ROLE_NAME') == 'kppn'){
+				$filters[] = "KODE = '".$this->session->userdata('USERNAME')."'";
+			}
 			$opt_kppn = $this->get_option_data($this->kppn_model, $filters);
 
 			$filters = array();
@@ -522,7 +678,7 @@ class Laporan extends CI_Controller {
 				'placeholder'	=> '-- Pilih Jenis --',
 				'options' 		=> $opt_jenis,
 				'value' 		=> '',				
-				'classes' 		=> 'full-width',
+				'classes' 		=> '',
 			);
 			$fields[] = (object) array(
 				'type' 			=> 'select',
@@ -533,15 +689,25 @@ class Laporan extends CI_Controller {
 				'value' 		=> '',				
 				'classes' 		=> '',
 			);
-			$fields[] = (object) array(
-				'type' 			=> 'select',
-				'label' 		=> 'Status Laporan',
-				'name' 			=> 'status_laporan',
-				'placeholder'	=> '-- Pilih Status --',
-				'options' 		=> $opt_status,
-				'value' 		=> '',				
-				'classes' 		=> '',
-			);
+			if ($this->session->userdata('ROLE_NAME') == 'kppn'){
+				$fields[] = (object) array(
+					'type' 			=> 'hidden',
+					'label' 		=> 'Status Laporan',
+					'name' 			=> 'status_laporan',
+					'value' 		=> '1',		
+					'classes' 		=> '',
+				);				
+			}else{
+				$fields[] = (object) array(
+					'type' 			=> 'select',
+					'label' 		=> 'Status Laporan',
+					'name' 			=> 'status_laporan',
+					'placeholder'	=> '-- Pilih Status --',
+					'options' 		=> $opt_status,
+					'value' 		=> '',				
+					'classes' 		=> 'full-width',
+				);
+			}
 			$fields[] = (object) array(
 				'type' 			=> 'separation',
 				'classes' 		=> 'full-width',
@@ -554,16 +720,28 @@ class Laporan extends CI_Controller {
 				'options' 		=> $opt_seksi,
 				'value' 		=> '',				
 				'classes' 		=> '',
-			);			
-			$fields[] = (object) array(
-				'type' 			=> 'select',
-				'label' 		=> 'KPPN',
-				'name' 			=> 'kppn',
-				'placeholder'	=> '-- Pilih KPPN --',
-				'options' 		=> $opt_kppn,
-				'value' 		=> '',				
-				'classes' 		=> '',
-			);					
+			);
+			if ($this->session->userdata('ROLE_NAME') == 'kppn'){
+				$fields[] = (object) array(
+					'type' 			=> 'select',
+					'label' 		=> 'KPPN',
+					'name' 			=> 'kppn',
+					'placeholder'	=> '',
+					'options' 		=> $opt_kppn,
+					'value' 		=> '',				
+					'classes' 		=> '',
+				);
+			}else{
+				$fields[] = (object) array(
+					'type' 			=> 'select',
+					'label' 		=> 'KPPN',
+					'name' 			=> 'kppn',
+					'placeholder'	=> '-- Pilih KPPN --',
+					'options' 		=> $opt_kppn,
+					'value' 		=> '',				
+					'classes' 		=> '',
+				);				
+			}
 			$fields[] = (object) array(
 				'type' 			=> 'select',
 				'label' 		=> 'Ke Bidang',
@@ -699,8 +877,12 @@ class Laporan extends CI_Controller {
 						}
 					}
 				}else{
-					$error_info[] = 'File laporan can not be null';
-					$error_status = true;							
+					if($_POST['recent_sumber'] == 'upload' and ($_POST['recent_file'] != '' or $_POST['recent_file'] != null)){
+						
+					}else{
+						$error_info[] = 'File laporan can not be null';
+						$error_status = true;
+					}					
 				}
 			}
 			
@@ -798,6 +980,9 @@ class Laporan extends CI_Controller {
 
 			$filters = array();
 			$filters[] = "STATUS = '1'";
+			if ($this->session->userdata('ROLE_NAME') == 'kppn'){
+				$filters[] = "ID = '1'";
+			}
 			$opt_status = $this->get_option_data($this->status_laporan_model, $filters);
 
 			$filters = array();
@@ -805,7 +990,10 @@ class Laporan extends CI_Controller {
 			$opt_seksi = $this->get_option_data($this->seksi_model, $filters);
 
 			$filters = array();
-			$filters[] = "STATUS = '1'";			
+			$filters[] = "STATUS = '1'";
+			if ($this->session->userdata('ROLE_NAME') == 'kppn'){
+				$filters[] = "KODE = '".$this->session->userdata('USERNAME')."'";
+			}
 			$opt_kppn = $this->get_option_data($this->kppn_model, $filters);
 
 			$filters = array();
@@ -912,7 +1100,7 @@ class Laporan extends CI_Controller {
 				'placeholder'	=> '-- Pilih Jenis --',
 				'options' 		=> $opt_jenis,
 				'value' 		=> $r_jenis_laporan,				
-				'classes' 		=> 'full-width',
+				'classes' 		=> '',
 			);
 			$fields[] = (object) array(
 				'type' 			=> 'select',
@@ -923,15 +1111,25 @@ class Laporan extends CI_Controller {
 				'value' 		=> $r_periode_laporan,				
 				'classes' 		=> '',
 			);
-			$fields[] = (object) array(
-				'type' 			=> 'select',
-				'label' 		=> 'Status Laporan',
-				'name' 			=> 'status_laporan',
-				'placeholder'	=> '-- Pilih Status --',
-				'options' 		=> $opt_status,
-				'value' 		=> $r_status_laporan,				
-				'classes' 		=> '',
-			);
+			if ($this->session->userdata('ROLE_NAME') == 'kppn'){
+				$fields[] = (object) array(
+					'type' 			=> 'hidden',
+					'label' 		=> 'Status Laporan',
+					'name' 			=> 'status_laporan',
+					'value' 		=> '1',				
+					'classes' 		=> '',
+				);				
+			}else{
+				$fields[] = (object) array(
+					'type' 			=> 'select',
+					'label' 		=> 'Status Laporan',
+					'name' 			=> 'status_laporan',
+					'placeholder'	=> '-- Pilih Status --',
+					'options' 		=> $opt_status,
+					'value' 		=> $r_status_laporan,				
+					'classes' 		=> 'full-width',
+				);
+			}
 			$fields[] = (object) array(
 				'type' 			=> 'separation',
 				'classes' 		=> 'full-width',
@@ -944,16 +1142,28 @@ class Laporan extends CI_Controller {
 				'options' 		=> $opt_seksi,
 				'value' 		=> $r_seksi,				
 				'classes' 		=> '',
-			);			
-			$fields[] = (object) array(
-				'type' 			=> 'select',
-				'label' 		=> 'KPPN',
-				'name' 			=> 'kppn',
-				'placeholder'	=> '-- Pilih KPPN --',
-				'options' 		=> $opt_kppn,
-				'value' 		=> $r_kppn,				
-				'classes' 		=> '',
-			);					
+			);
+			if ($this->session->userdata('ROLE_NAME') == 'kppn'){
+				$fields[] = (object) array(
+					'type' 			=> 'select',
+					'label' 		=> 'KPPN',
+					'name' 			=> 'kppn',
+					'placeholder'	=> '',
+					'options' 		=> $opt_kppn,
+					'value' 		=> $r_kppn,				
+					'classes' 		=> '',
+				);				
+			}else{
+				$fields[] = (object) array(
+					'type' 			=> 'select',
+					'label' 		=> 'KPPN',
+					'name' 			=> 'kppn',
+					'placeholder'	=> '-- Pilih KPPN --',
+					'options' 		=> $opt_kppn,
+					'value' 		=> $r_kppn,				
+					'classes' 		=> '',
+				);
+			}
 			$fields[] = (object) array(
 				'type' 			=> 'select',
 				'label' 		=> 'Ke Bidang',

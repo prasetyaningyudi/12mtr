@@ -25,9 +25,13 @@ $roles = array(
 				'user' => array ('index', 'list', 'insert', 'update', 'update_status', 'delete'),	
 			),	
 			'kppn' => array (
-				'kppn' => array ('index', 'list', 'insert', 'update', 'update_status', 'delete'),
 				'user' => array ('index', 'list', 'insert', 'update', 'update_status', 'delete', 'detail', 'm_form_user_info', 'insert_user_info', 'm_user_info'),
-			),				
+				'laporan' => array ('index', 'list', 'insert', 'update', 'detail'),
+			),
+			'kanwil' => array (
+				'user' => array ('index', 'list', 'insert', 'update', 'update_status', 'delete', 'detail', 'm_form_user_info', 'insert_user_info', 'm_user_info'),
+				'laporan' => array ('index', 'list', 'detail', 'm_form_edit_status', 'edit_status'),
+			),			
 		);
 
 
