@@ -129,8 +129,8 @@ class Laporan extends CI_Controller {
 						(object) array( 'classes' => ' hidden ', 'value' => $value->ID ),
 						(object) array( 'classes' => ' bold align-center ', 'value' => $no_body+1 ),
 						(object) array( 'classes' => ' align-left ', 'value' => $value->NAMA ),
-						(object) array( 'classes' => ' align-left ', 'value' => $value->NOMOR ),
-						(object) array( 'classes' => ' align-center ', 'value' => $value->TANGGAL ),
+						//(object) array( 'classes' => ' align-left ', 'value' => $value->NOMOR ),
+						//(object) array( 'classes' => ' align-center ', 'value' => $value->TANGGAL ),
 						(object) array( 'classes' => ' align-center ', 'value' => $value->SUMBER ),
 						(object) array( 'classes' => ' align-center ', 'value' => '<a href="'.$value->FILE.'" target="_blank" title="view"><i style="font-size: 16px;" class="far fa-eye"></i></a>' ),
 						(object) array( 'classes' => ' align-left ', 'value' => $value->BNAMA ),
@@ -152,15 +152,15 @@ class Laporan extends CI_Controller {
 		$header = array(
 			array (
 				(object) array ('rowspan' => 2, 'classes' => 'bold align-center capitalize', 'value' => 'No'),
-				(object) array ('colspan' => 5, 'classes' => 'bold align-center capitalize', 'value' => 'detail laporan'),								
+				(object) array ('colspan' => 3, 'classes' => 'bold align-center capitalize', 'value' => 'detail laporan'),								
 				(object) array ('colspan' => 3, 'classes' => 'bold align-center capitalize', 'value' => 'keterangan laporan'),								
 				(object) array ('colspan' => 2, 'classes' => 'bold align-center capitalize', 'value' => 'dari'),			
 				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'kepada'),		
 			),
 			array (
 				(object) array ('colspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'nama'),								
-				(object) array ('colspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'nomor'),								
-				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'tanggal'),			
+				//(object) array ('colspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'nomor'),								
+				//(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'tanggal'),			
 				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'sumber'),			
 				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'file'),			
 				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'jenis'),			
@@ -378,10 +378,10 @@ class Laporan extends CI_Controller {
 								$file = base_url().'public/files/'.$rename;
 							}
 						}
-					}else{
-						$error_info[] = 'File laporan can not be null';
-						$error_status = true;							
 					}
+				}else{
+					$error_info[] = 'File laporan can not be null';
+					$error_status = true;							
 				}
 			}
 			
@@ -621,10 +621,88 @@ class Laporan extends CI_Controller {
 				$error_info[] = 'Nama can not be null';
 				$error_status = true;
 			}
-			if($_POST['jatuh_tempo'] == ''){
-				$error_info[] = 'Jatuh tempo can not be null';
+			if($_POST['sumber'] == ''){
+				$error_info[] = 'sumber can not be null';
 				$error_status = true;
-			}			
+			}	
+			if($_POST['jenis_laporan'] == ''){
+				$error_info[] = 'jenis laporan can not be null';
+				$error_status = true;
+			}
+			if($_POST['periode_laporan'] == ''){
+				$error_info[] = 'periode laporan can not be null';
+				$error_status = true;
+			}
+			if($_POST['status_laporan'] == ''){
+				$error_info[] = 'status laporan can not be null';
+				$error_status = true;
+			}
+			if($_POST['seksi'] == ''){
+				$error_info[] = 'dari seksi can not be null';
+				$error_status = true;
+			}
+			if($_POST['kppn'] == ''){
+				$error_info[] = 'kppn can not be null';
+				$error_status = true;
+			}
+			if($_POST['bidang'] == ''){
+				$error_info[] = 'bidang can not be null';
+				$error_status = true;
+			}
+			$file = '';
+			if($_POST['sumber'] == 'gdrive'){
+				if($_POST['gdrive'] == ''){
+					$error_info[] = 'link gdrive can not be null';
+					$error_status = true;					
+				}else{
+					$file = $_POST['gdrive'];
+				}
+			}else if($_POST['sumber'] == 'upload'){
+				if(isset($_FILES["upload"])){
+					if($_FILES["upload"] != null){
+						$allowed_exts = array("pdf");
+						$extension = explode("/", $_FILES["upload"]["type"]);
+						$extension = end($extension);
+						$true_ext = false;
+						foreach($allowed_exts as $val){
+							if($extension == $val){
+								$true_ext = true;
+							}
+						}
+						if($true_ext == false){
+							$error_info[] = 'Only accept pdf';
+							$error_status = true;				
+						}
+						if($_FILES["upload"]["size"] > '5000000'){
+							$error_info[] = 'Max file size 5mb';
+							$error_status = true;								
+						}
+						if($error_status == false){
+							//upload file
+							$filename = $_FILES['upload']['name'];
+							$target_dir = FCPATH."public/files/";
+							$uniq = date('YmdHis');
+							$rename = $uniq . '_' . $filename;
+							$success_upload = move_uploaded_file($_FILES["upload"]["tmp_name"], $target_dir . $rename);
+							
+							if(!$success_upload){
+								$error_info[] = 'Error upload photo';
+								$error_status = true;
+							}else{
+								$file = base_url().'public/files/'.$rename;
+								if($_POST['recent_sumber'] == 'upload' and ($_POST['recent_file'] != '' or $_POST['recent_file'] != null)){
+									$recent_file = explode('/', $_POST['recent_file']);
+									$recent_file = end($recent_file);
+									unlink(FCPATH."public/files/".$recent_file);
+								}
+							}
+						}
+					}
+				}else{
+					$error_info[] = 'File laporan can not be null';
+					$error_status = true;							
+				}
+			}
 			
 			if($error_status == true){
 				$this->data['error'] = (object) array (
@@ -636,13 +714,25 @@ class Laporan extends CI_Controller {
 				echo json_encode($this->data['error']);
 			}else{
 				$this->data['update'] = array(
-						'NAMA' => $_POST['nama'],
-						'JATUH_TEMPO' => $_POST['jatuh_tempo'],
-					);				
+					'NAMA' => $_POST['nama'],
+					'NOMOR' => $_POST['nomor'],
+					'TANGGAL' => $_POST['tanggal'],
+					'SUMBER' => $_POST['sumber'],
+					'FILE' => $file,
+					'JENIS_LAPORAN_ID' => $_POST['jenis_laporan'],
+					'PERIODE_LAPORAN_ID' => $_POST['periode_laporan'],
+					'STATUS_LAPORAN_ID' => $_POST['status_laporan'],
+					'SEKSI_ID' => $_POST['seksi'],
+					'KPPN_ID' => $_POST['kppn'],
+					'BIDANG_ID' => $_POST['bidang'],
+					'USER_ID' => $this->session->userdata('ID'),
+					'CATATAN' => $_POST['catatan']
+				);	
+				//var_dump($this->data['update']);die;
 				$result = $this->laporan_model->update($this->data['update'], $_POST['id']);
 				if($result == true){
 					$info = array();
-					$info[] = 'Update data successfully';						
+					$info[] = 'update data successfully';						
 					$this->data['info'] = (object) array (
 						'type'  	=> 'success',
 						'data'		=> (object) array (
@@ -651,7 +741,7 @@ class Laporan extends CI_Controller {
 					);
 				}else{
 					$info = array();
-					$info[] = 'Update data not successfull';
+					$info[] = 'update data not successfull';
 					$this->data['info'] = (object) array (
 						'type'  	=> 'error',
 						'data'		=> (object) array (
@@ -663,16 +753,64 @@ class Laporan extends CI_Controller {
 			}			
 		}else{
 			$r_nama = '';
-			$r_jatuh_tempo = '';
+			$r_nomor = '';
+			$r_tanggal = '';
+			$r_sumber = '';
+			$r_file = '';
+			$r_jenis_laporan = '';
+			$r_periode_laporan = '';
+			$r_status_laporan = '';
+			$r_seksi = '';
+			$r_kppn = '';
+			$r_bidang = '';
+			$r_catatan = '';
 			
 			$filter = array();
-			$filter[] = "ID = ". $_POST['id'];
+			$filter[] = "A.ID = ". $_POST['id'];
 			$this->data['result'] = $this->laporan_model->get($filter);
 			foreach($this->data['result'] as $value){
 				$r_id 	= $value->ID;
 				$r_nama = $value->NAMA;
-				$r_jatuh_tempo = $value->JATUH_TEMPO;
+				$r_nomor = $value->NOMOR;
+				$r_tanggal = $value->TANGGAL;
+				$r_sumber = $value->SUMBER;
+				$r_file = $value->FILE;
+				$r_jenis_laporan = $value->JENIS_LAPORAN_ID;
+				$r_periode_laporan = $value->PERIODE_LAPORAN_ID;
+				$r_status_laporan = $value->STATUS_LAPORAN_ID;
+				$r_seksi = $value->SEKSI_ID;
+				$r_kppn = $value->KPPN_ID;
+				$r_bidang = $value->BIDANG_ID;
+				$r_catatan = $value->CATATAN;
 			}
+			
+			$opt_sumber = array();
+			$opt_sumber[] = (object) array('label'=>'upload', 'value'=>'upload');
+			$opt_sumber[] = (object) array('label'=>'gdrive', 'value'=>'gdrive');
+			
+			$filters = array();
+			$filters[] = "STATUS = '1'";
+			$opt_jenis = $this->get_option_data($this->jenis_laporan_model, $filters);				
+			
+			$filters = array();
+			$filters[] = "STATUS = '1'";
+			$opt_periode = $this->get_option_data($this->periode_laporan_model, $filters);	
+
+			$filters = array();
+			$filters[] = "STATUS = '1'";
+			$opt_status = $this->get_option_data($this->status_laporan_model, $filters);
+
+			$filters = array();
+			$filters[] = "A.STATUS = '1'";
+			$opt_seksi = $this->get_option_data($this->seksi_model, $filters);
+
+			$filters = array();
+			$filters[] = "STATUS = '1'";			
+			$opt_kppn = $this->get_option_data($this->kppn_model, $filters);
+
+			$filters = array();
+			$filters[] = "STATUS = '1'";
+			$opt_bidang = $this->get_option_data($this->bidang_model, $filters);			
 			
 			$fields = array();
 			$fields[] = (object) array(
@@ -689,15 +827,154 @@ class Laporan extends CI_Controller {
 				'placeholder'	=> 'nama',
 				'value' 		=> $r_nama,
 				'classes' 		=> 'full-width',
-			);
+			);	
+			$fields[] = (object) array(
+				'type' 			=> 'text',
+				'label' 		=> 'Nomor',
+				'name' 			=> 'nomor',
+				'placeholder'	=> 'nomor',
+				'value' 		=> $r_nomor,
+				'classes' 		=> '',
+			);			
 			$fields[] = (object) array(
 				'type' 			=> 'date',
-				'label' 		=> 'Jatuh Tempo',
-				'name' 			=> 'jatuh_tempo',
-				'placeholder'	=> 'tanggal jatuh tempo',
-				'value' 		=> $r_jatuh_tempo,
+				'label' 		=> 'Tanggal',
+				'name' 			=> 'tanggal',
+				'placeholder'	=> 'tanggal',
+				'value' 		=> $r_tanggal,
+				'classes' 		=> '',
+			);	
+			$fields[] = (object) array(
+				'type' 			=> 'select',
+				'label' 		=> 'Sumber',
+				'name' 			=> 'sumber',
+				'placeholder'	=> '-- Pilih Sumber --',
+				'options' 		=> $opt_sumber,
+				'value' 		=> $r_sumber,				
+				'classes' 		=> '',
+			);
+			$fields[] = (object) array(
+				'type' 			=> 'hidden',
+				'label' 		=> 'Recent Sumber',
+				'name' 			=> 'recent_sumber',
+				'value' 		=> $r_sumber,
+				'classes' 		=> '',
+			);			
+			$fields[] = (object) array(
+				'type' 			=> 'info',
+				'label' 		=> 'Recent File',
+				'placeholder'	=> 'recent file',
+				'value' 		=> '<a href="'.$r_file.'" target="_blank" title="view"><i style="font-size: 16px;" class="far fa-eye"></i></a>',
+				'classes' 		=> '',
+			);	
+			$fields[] = (object) array(
+				'type' 			=> 'hidden',
+				'label' 		=> 'Recent File',
+				'name' 			=> 'recent_file',
+				'value' 		=> $r_file,
+				'classes' 		=> '',
+			);				
+			$fields[] = (object) array(
+				'type' 			=> 'file',
+				'label' 		=> 'File',
+				'name' 			=> 'upload',
+				'placeholder'	=> 'file',
+				'value' 		=> '',
+				'classes' 		=> 'active-when-sumber-upload full-width',
+			);
+			if($r_sumber == 'gdrive'){
+				$fields[] = (object) array(
+					'type' 			=> 'text',
+					'label' 		=> 'Link Gdrive',
+					'name' 			=> 'gdrive',
+					'placeholder'	=> 'gdrive',
+					'value' 		=> $r_file,
+					'classes' 		=> 'active-when-sumber-gdrive full-width',
+				);
+			}else{
+				$fields[] = (object) array(
+					'type' 			=> 'text',
+					'label' 		=> 'Link Gdrive',
+					'name' 			=> 'gdrive',
+					'placeholder'	=> 'gdrive',
+					'value' 		=> '',
+					'classes' 		=> 'active-when-sumber-gdrive full-width',
+				);				
+			}
+			$fields[] = (object) array(
+				'type' 			=> 'separation',
+				'classes' 		=> 'full-width',
+			);			
+			$fields[] = (object) array(
+				'type' 			=> 'select',
+				'label' 		=> 'Jenis Laporan',
+				'name' 			=> 'jenis_laporan',
+				'placeholder'	=> '-- Pilih Jenis --',
+				'options' 		=> $opt_jenis,
+				'value' 		=> $r_jenis_laporan,				
+				'classes' 		=> 'full-width',
+			);
+			$fields[] = (object) array(
+				'type' 			=> 'select',
+				'label' 		=> 'Periode Laporan',
+				'name' 			=> 'periode_laporan',
+				'placeholder'	=> '-- Pilih Periode --',
+				'options' 		=> $opt_periode,
+				'value' 		=> $r_periode_laporan,				
+				'classes' 		=> '',
+			);
+			$fields[] = (object) array(
+				'type' 			=> 'select',
+				'label' 		=> 'Status Laporan',
+				'name' 			=> 'status_laporan',
+				'placeholder'	=> '-- Pilih Status --',
+				'options' 		=> $opt_status,
+				'value' 		=> $r_status_laporan,				
+				'classes' 		=> '',
+			);
+			$fields[] = (object) array(
+				'type' 			=> 'separation',
 				'classes' 		=> 'full-width',
 			);				
+			$fields[] = (object) array(
+				'type' 			=> 'select',
+				'label' 		=> 'Dari Seksi',
+				'name' 			=> 'seksi',
+				'placeholder'	=> '-- Pilih Seksi --',
+				'options' 		=> $opt_seksi,
+				'value' 		=> $r_seksi,				
+				'classes' 		=> '',
+			);			
+			$fields[] = (object) array(
+				'type' 			=> 'select',
+				'label' 		=> 'KPPN',
+				'name' 			=> 'kppn',
+				'placeholder'	=> '-- Pilih KPPN --',
+				'options' 		=> $opt_kppn,
+				'value' 		=> $r_kppn,				
+				'classes' 		=> '',
+			);					
+			$fields[] = (object) array(
+				'type' 			=> 'select',
+				'label' 		=> 'Ke Bidang',
+				'name' 			=> 'bidang',
+				'placeholder'	=> '-- Pilih Bidang --',
+				'options' 		=> $opt_bidang,
+				'value' 		=> $r_bidang,				
+				'classes' 		=> 'full-width',
+			);
+			$fields[] = (object) array(
+				'type' 			=> 'separation',
+				'classes' 		=> 'full-width',
+			);
+			$fields[] = (object) array(
+				'type' 			=> 'textarea',
+				'label' 		=> 'Catatan',
+				'name' 			=> 'catatan',
+				'placeholder'	=> 'catatan',
+				'value' 		=> $r_catatan,
+				'classes' 		=> 'full-width',
+			);					
 
 			$this->data['update'] = (object) array (
 				'type'  	=> 'update_default',
@@ -773,6 +1050,14 @@ class Laporan extends CI_Controller {
 					$body[] = array(
 						(object) array( 'classes' => ' bold align-left ', 'value' => 'Catatan' ),
 						(object) array( 'classes' => ' align-left ', 'value' => $value->CATATAN ),
+					);					
+					$body[] = array(
+						(object) array( 'classes' => ' bold align-left ', 'value' => 'Create Date' ),
+						(object) array( 'classes' => ' align-left ', 'value' => $value->CREATE_DATE ),
+					);					
+					$body[] = array(
+						(object) array( 'classes' => ' bold align-left ', 'value' => 'Update Date' ),
+						(object) array( 'classes' => ' align-left ', 'value' => $value->UPDATE_DATE ),
 					);
 				}
 			}

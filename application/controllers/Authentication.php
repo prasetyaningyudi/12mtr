@@ -60,7 +60,7 @@ class Authentication extends CI_Controller {
 						'ID'=>$item->ID,
 						'USERNAME'=>$item->USERNAME,
 						'ROLE_ID'=>$item->BID,
-						'ROLE_NAME'=>$item->ROLE_NAME,
+						'ROLE_NAME'=>strtolower($item->ROLE_NAME),
 						'PHOTO'=>$item->PHOTO_1,
 						'is_logged_in'=>1
 					);					
