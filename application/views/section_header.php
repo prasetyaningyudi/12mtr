@@ -16,7 +16,7 @@
 	?>		
 
 	<?php if ($favicon != ''): ?>
-		<?php echo '<link rel="icon" href="'.$favicon.'" type="image/ico" />'; ?>
+		<?php echo '<link rel="icon" href="'.base_url().$favicon.'" type="image/ico" />'; ?>
 	<?php else: ?> 
 		<link rel="icon" href="<?php echo base_url(); ?>assets/images/favicon.png" type="image/ico" />
 	<?php endif; ?>		
