@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 17, 2018 at 09:58 AM
+-- Generation Time: Jan 08, 2019 at 10:05 AM
 -- Server version: 10.1.31-MariaDB
 -- PHP Version: 7.2.4
 
@@ -21,6 +21,23 @@ SET time_zone = "+00:00";
 --
 -- Database: `12mtr`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `app_data`
+--
+
+CREATE TABLE `app_data` (
+  `ID` int(11) NOT NULL,
+  `NAME` varchar(250) DEFAULT NULL,
+  `ICON` varchar(45) DEFAULT NULL,
+  `FAVICON` text,
+  `NOTES` text,
+  `CREATE_DATE` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `UPDATE_DATE` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `USER_ID` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -43,6 +60,7 @@ CREATE TABLE `bidang` (
 CREATE TABLE `jenis_laporan` (
   `ID` int(11) NOT NULL,
   `NAMA` text NOT NULL,
+  `JATUH_TEMPO` int(11) NOT NULL,
   `STATUS` varchar(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -54,6 +72,7 @@ CREATE TABLE `jenis_laporan` (
 
 CREATE TABLE `kppn` (
   `ID` int(11) NOT NULL,
+  `KODE` varchar(45) NOT NULL,
   `NAMA` text NOT NULL,
   `STATUS` varchar(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -67,8 +86,9 @@ CREATE TABLE `kppn` (
 CREATE TABLE `laporan` (
   `ID` int(11) NOT NULL,
   `NAMA` text NOT NULL,
-  `NOMOR` text NOT NULL,
-  `TANGGAL` date NOT NULL,
+  `NOMOR` text,
+  `TANGGAL` date DEFAULT NULL,
+  `SUMBER` varchar(255) NOT NULL,
   `FILE` text NOT NULL,
   `JENIS_LAPORAN_ID` int(11) NOT NULL,
   `PERIODE_LAPORAN_ID` int(11) NOT NULL,
@@ -76,7 +96,10 @@ CREATE TABLE `laporan` (
   `SEKSI_ID` int(11) NOT NULL,
   `KPPN_ID` int(11) NOT NULL,
   `BIDANG_ID` int(11) NOT NULL,
-  `USER_ID` int(11) NOT NULL
+  `USER_ID` int(11) NOT NULL,
+  `CATATAN` text CHARACTER SET latin2 COLLATE latin2_hungarian_ci,
+  `CREATE_DATE` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `UPDATE_DATE` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -102,13 +125,13 @@ CREATE TABLE `menu` (
 --
 
 INSERT INTO `menu` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `MENU_ID`) VALUES
-(14, 'Setup Menu', '#', 'bars', '01', '1', '2018-12-12 16:56:36', '2018-12-17 15:19:05', NULL),
-(16, 'menu', 'menu', 'plus', '0101', '1', '2018-12-13 09:13:44', '2018-12-17 15:22:12', 14),
-(17, 'User Setting', '#', 'users-cog', '02', '1', '2018-12-13 13:01:52', '2018-12-17 15:27:45', NULL),
-(18, 'Role', 'role', 'users', '03', '1', '2018-12-13 13:02:00', '2018-12-17 15:26:24', NULL),
-(21, 'Another menu', 'hem', 'anchor', '04', '1', '2018-12-13 13:02:23', '2018-12-17 15:32:47', NULL),
-(25, 'list', 'user', 'plus', '0201', '1', '2018-12-14 11:11:35', '2018-12-17 15:27:23', 17),
-(38, 'menu assign', 'assignmenu', 'user-plus', '0102', '1', '2018-12-17 15:22:54', '2018-12-17 15:22:54', 14);
+(1, 'Setup Menu', '#', 'bars', '01', '1', '2019-01-08 15:51:57', '2019-01-08 16:01:06', NULL),
+(2, 'User & Role', '#', 'users-cog', '02', '1', '2019-01-08 15:52:58', '2019-01-08 16:01:21', NULL),
+(3, 'Application Data', 'app_data', 'cogs', '03', '1', '2019-01-08 15:54:30', '2019-01-08 16:02:37', NULL),
+(4, 'List Menu', 'menu', 'bars', '0101', '1', '2019-01-08 15:55:15', '2019-01-08 15:55:15', 1),
+(5, 'Assign Menu', 'assignmenu', 'bar', '0102', '1', '2019-01-08 15:56:23', '2019-01-08 15:56:39', 1),
+(6, 'List User', 'user', '', '0201', '1', '2019-01-08 15:57:31', '2019-01-08 15:57:31', 2),
+(7, 'List Role', 'role', '', '0202', '1', '2019-01-08 15:57:57', '2019-01-08 15:57:57', 2);
 
 -- --------------------------------------------------------
 
@@ -136,6 +159,13 @@ CREATE TABLE `role` (
   `UPDATE_DATE` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Dumping data for table `role`
+--
+
+INSERT INTO `role` (`ID`, `ROLE_NAME`, `STATUS`, `CREATE_DATE`, `UPDATE_DATE`) VALUES
+(1, 'administrator', '1', '2019-01-08 15:30:43', '2019-01-08 15:30:43');
+
 -- --------------------------------------------------------
 
 --
@@ -147,6 +177,19 @@ CREATE TABLE `role_menu` (
   `ROLE_ID` int(11) NOT NULL,
   `MENU_ID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `role_menu`
+--
+
+INSERT INTO `role_menu` (`ID`, `ROLE_ID`, `MENU_ID`) VALUES
+(1, 1, 1),
+(2, 1, 4),
+(3, 1, 5),
+(4, 1, 2),
+(5, 1, 6),
+(6, 1, 7),
+(7, 1, 3);
 
 -- --------------------------------------------------------
 
@@ -189,6 +232,13 @@ CREATE TABLE `user` (
   `ROLE_ID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Dumping data for table `user`
+--
+
+INSERT INTO `user` (`ID`, `USERNAME`, `PASSWORD`, `STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `ROLE_ID`) VALUES
+(1, 'prsty', 'c61a56c2b825813586744dfde2f2aad1', '1', '2019-01-08 15:30:43', '2019-01-08 15:30:43', 1);
+
 -- --------------------------------------------------------
 
 --
@@ -208,6 +258,13 @@ CREATE TABLE `user_info` (
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `app_data`
+--
+ALTER TABLE `app_data`
+  ADD PRIMARY KEY (`ID`),
+  ADD KEY `fk_APP_DATA_USER1_idx` (`USER_ID`);
 
 --
 -- Indexes for table `bidang`
@@ -285,6 +342,7 @@ ALTER TABLE `status_laporan`
 --
 ALTER TABLE `user`
   ADD PRIMARY KEY (`ID`),
+  ADD UNIQUE KEY `USERNAME_UNIQUE` (`USERNAME`),
   ADD KEY `fk_USER_ROLE_idx` (`ROLE_ID`);
 
 --
@@ -297,6 +355,18 @@ ALTER TABLE `user_info`
 --
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `app_data`
+--
+ALTER TABLE `app_data`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `bidang`
+--
+ALTER TABLE `bidang`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `jenis_laporan`
@@ -320,7 +390,7 @@ ALTER TABLE `laporan`
 -- AUTO_INCREMENT for table `menu`
 --
 ALTER TABLE `menu`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `periode_laporan`
@@ -332,13 +402,13 @@ ALTER TABLE `periode_laporan`
 -- AUTO_INCREMENT for table `role`
 --
 ALTER TABLE `role`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `role_menu`
 --
 ALTER TABLE `role_menu`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `seksi`
@@ -356,7 +426,7 @@ ALTER TABLE `status_laporan`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `user_info`
@@ -367,6 +437,12 @@ ALTER TABLE `user_info`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `app_data`
+--
+ALTER TABLE `app_data`
+  ADD CONSTRAINT `fk_APP_DATA_USER1` FOREIGN KEY (`USER_ID`) REFERENCES `user` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Constraints for table `laporan`
