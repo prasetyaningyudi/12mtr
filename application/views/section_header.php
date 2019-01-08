@@ -6,7 +6,20 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="icon" href="<?php echo base_url(); ?>assets/images/favicon.ico" type="image/ico" />
+	<?php
+		$favicon = '';
+		if(!empty($app_data)){
+			foreach($app_data as $value) {
+				$favicon = $value->FAVICON;
+			}
+		}
+	?>		
+
+	<?php if ($favicon != ''): ?>
+		<?php echo '<link rel="icon" href="'.$favicon.'" type="image/ico" />'; ?>
+	<?php else: ?> 
+		<link rel="icon" href="<?php echo base_url(); ?>assets/images/favicon.png" type="image/ico" />
+	<?php endif; ?>		
 
     <title>
 		<?php 

@@ -69,6 +69,7 @@ class App_data extends CI_Controller {
 						(object) array( 'classes' => ' bold align-center ', 'value' => $no_body+1 ),
 						(object) array( 'classes' => ' align-left ', 'value' => $value->NAME ),
 						(object) array( 'classes' => ' align-left ', 'value' => $value->ICON ),
+						(object) array( 'classes' => ' align-left ', 'value' => $value->FAVICON ),
 						(object) array( 'classes' => ' align-center ', 'value' => $value->NOTES ),
 					);
 					$no_body++;
@@ -85,6 +86,7 @@ class App_data extends CI_Controller {
 				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'No'),
 				(object) array ('colspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'App name'),								
 				(object) array ('colspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'App icon'),								
+				(object) array ('colspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'App Favicon'),								
 				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'marquee info'),			
 			)		
 		);
@@ -157,6 +159,7 @@ class App_data extends CI_Controller {
 				$this->data['insert'] = array(
 					'NAME' => $_POST['name'],
 					'ICON' => $_POST['icon'],
+					'FAVICON' => $_POST['favicon'],
 					'NOTES' => $_POST['notes'],
 					'USER_ID' => $this->session->userdata('ID'),
 				);	
@@ -190,7 +193,15 @@ class App_data extends CI_Controller {
 				'placeholder'	=> 'user icon from fontawesome',
 				'value' 		=> '',
 				'classes' 		=> 'full-width',
-			);				
+			);
+			$fields[] = (object) array(
+				'type' 			=> 'text',
+				'label' 		=> 'App Favicon',
+				'name' 			=> 'favicon',
+				'placeholder'	=> 'use valid favicon link image png or ico',
+				'value' 		=> '',
+				'classes' 		=> 'full-width',
+			);			
 			$fields[] = (object) array(
 				'type' 			=> 'textarea',
 				'label' 		=> 'Marquee Text',
@@ -235,6 +246,7 @@ class App_data extends CI_Controller {
 				$this->data['update'] = array(
 						'NAME' => $_POST['name'],
 						'ICON' => $_POST['icon'],
+						'FAVICON' => $_POST['favicon'],
 						'NOTES' => $_POST['notes'],
 					);				
 				$result = $this->app_data_model->update($this->data['update'], $_POST['id']);
@@ -263,6 +275,7 @@ class App_data extends CI_Controller {
 		}else{
 			$r_name = '';
 			$r_icon = '';
+			$r_favicon = '';
 			$r_notes = '';
 			
 			$filter = array();
@@ -272,6 +285,7 @@ class App_data extends CI_Controller {
 				$r_id 	= $value->ID;
 				$r_name = $value->NAME;
 				$r_icon = $value->ICON;
+				$r_favicon = $value->FAVICON;
 				$r_notes = $value->NOTES;
 			}
 			
@@ -298,7 +312,15 @@ class App_data extends CI_Controller {
 				'placeholder'	=> 'user icon from fontawesome',
 				'value' 		=> $r_icon,
 				'classes' 		=> 'full-width',
-			);				
+			);
+			$fields[] = (object) array(
+				'type' 			=> 'text',
+				'label' 		=> 'App Icon',
+				'name' 			=> 'icon',
+				'placeholder'	=> 'user icon from fontawesome',
+				'value' 		=> $r_favicon,
+				'classes' 		=> 'full-width',
+			);			
 			$fields[] = (object) array(
 				'type' 			=> 'textarea',
 				'label' 		=> 'Marquee Text',
