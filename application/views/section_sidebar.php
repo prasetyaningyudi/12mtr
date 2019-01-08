@@ -5,7 +5,28 @@
         <div class="col-md-3 left_col">
           <div class="left_col scroll-view">
             <div class="navbar nav_title" style="border: 0;">
-              <a href="<?php echo base_url(); ?>" class="site_title"><i class="fa fa-paw"></i> <span>Utakata</span></a>
+			<?php
+				$app_name = '';
+				$app_icon = '';
+				if(!empty($app_data)){
+					foreach($app_data as $value) {
+						$app_name = $value->NAME;
+						$app_icon = $value->ICON;
+					}
+				}
+			?>
+              <a href="<?php echo base_url(); ?>" class="site_title">
+				<?php if ($app_icon != ''): ?>
+					<?php echo '<i class="fa fa-'.$app_icon.'"></i>'; ?>
+				<?php else: ?> 
+					<i class="fa fa-paw"></i> 
+				<?php endif; ?>
+				<?php if ($app_name != ''): ?>
+					<span><?php echo $app_name; ?></span>  
+				<?php else: ?> 
+					<span>Utakata</span>
+				<?php endif; ?>			  
+			  </a>
             </div>
 
             <div class="clearfix"></div>

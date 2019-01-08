@@ -3,9 +3,23 @@
           <div class="nav_menu">
             <nav>
               <div class="nav toggle">
-                <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                <a id="menu_toggle"><i class="fa fa-bars"></i></a>			
               </div>
-
+				<?php
+					$notes = '';
+					if(!empty($app_data)){
+						foreach($app_data as $value) {
+							$notes = $value->NOTES;
+						}
+					}
+				?>			  
+				<div class="marquee">
+					<?php if ($notes != ''): ?>
+						<?php echo $notes; ?>
+					<?php else: ?> 
+						d..... - .....b
+					<?php endif; ?>				
+				</div>	
               <ul class="nav navbar-nav navbar-right">
                 <li class="">
                   <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">

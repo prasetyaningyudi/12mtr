@@ -124,3 +124,24 @@ pre{
 .displayed{
 	display: block;
 }
+
+.marquee {
+	float: left;
+	margin: 0;
+	padding: 18px 0px;
+	width: 60%;
+	height: 18px;	
+	overflow: hidden;
+	position: relative;
+    white-space: nowrap;
+    box-sizing: border-box;
+    animation: marquee 20s linear infinite;	
+}
+.marquee:hover {
+  animation-play-state: paused
+}
+@keyframes marquee { 
+0% { text-indent: 100% }
+100%{text-indent: -50%}
+}
+
