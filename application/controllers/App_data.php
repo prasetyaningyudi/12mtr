@@ -198,7 +198,7 @@ class App_data extends CI_Controller {
 				'type' 			=> 'text',
 				'label' 		=> 'App Favicon',
 				'name' 			=> 'favicon',
-				'placeholder'	=> 'use valid favicon link image png or ico',
+				'placeholder'	=> 'use valid favicon link image png or ico, example:asset/images/favicon.png',
 				'value' 		=> '',
 				'classes' 		=> 'full-width',
 			);			
@@ -315,9 +315,9 @@ class App_data extends CI_Controller {
 			);
 			$fields[] = (object) array(
 				'type' 			=> 'text',
-				'label' 		=> 'App Icon',
-				'name' 			=> 'icon',
-				'placeholder'	=> 'user icon from fontawesome',
+				'label' 		=> 'App Favicon',
+				'name' 			=> 'favicon',
+				'placeholder'	=> 'use valid favicon link image png or ico, example:asset/images/favicon.png',
 				'value' 		=> $r_favicon,
 				'classes' 		=> 'full-width',
 			);			
