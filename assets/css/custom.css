@@ -1095,7 +1095,7 @@ h2 {
     color: #BDBDBD
 }
 .x_content {
-    padding: 0 5px 6px;
+    padding: 0;
     position: relative;
     width: 100%;
     float: left;

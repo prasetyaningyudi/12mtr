@@ -1,7 +1,7 @@
 .main_container .top_toolbar{
     display: block;
 	background:#E2F1FF;
-	padding: 70px 30px 10px 30px;
+	padding: 70px 10px 10px 10px;
 	border-bottom: 1px solid #ddd;
     margin-left: 230px;
 }
@@ -39,7 +39,7 @@
 	right:-300px;
 	border-left: solid 1px #cccccc;
 	background: #ffffff;
-	padding: 20px;
+	padding: 8px;
 }
 .filter-dialog{
 	width: 100%;
@@ -48,6 +48,7 @@
 .filter-header{
 	font-size: 15px;
 	font-weight: 500;
+	margin: 0px 3px ;
 	border-bottom: 1px solid #e9ecef; 
 }
 .filter-body{
@@ -56,6 +57,7 @@
 
 .filter-footer{
 	padding: 10px 0;
+	margin-left: 3px;
 	border-top: 1px solid #e9ecef;
 	background: #fff;
     bottom: 0px;
@@ -147,5 +149,20 @@ pre{
 }
 .displayed{
 	display: block;
+}
+.x_panel{
+	padding: 10px;
+}
+.right_col{
+	padding: 10px !important;
+}
+.x_title {
+    border-bottom: 2px solid #E6E9ED;
+    padding: 1px 5px 6px;
+    margin-bottom: 0px !important;
+}
+.x_content {
+    padding: 0;
+    margin-top: 0 !important;
 }
 
