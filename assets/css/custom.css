@@ -691,7 +691,7 @@ a:focus {
 .top_nav .navbar-right li {
     display: inline-block;
     float: right;
-    position: static
+/*     position: static */
 }
 @media (min-width: 480px) {
     .top_nav .navbar-right li {

@@ -124,7 +124,10 @@
 		text-align:center;
 	}
 	.marquee {
-		width: 50%;
+		width: 40%;
+	}
+	.top_nav .navbar-right {
+		width: 35%;
 	}	
 }
 pre{
@@ -165,4 +168,9 @@ pre{
     padding: 0;
     margin-top: 0 !important;
 }
-
+.modal{
+	z-index: 100000
+}
+/* .dropdown-backdrop {
+    position: static !important;
+} */
